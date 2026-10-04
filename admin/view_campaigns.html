@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campaigns Management - RaktaSewa Admin</title>
+    <meta
+      name="description"
+      content="RaktaSewa Admin - Blood Donation Campaigns Management"
+    />
+    <!-- Cache busting meta tags -->
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDMuMkMxMC4zIDMuMiA1LjcgNy44IDUuNyAxMy41QzUuNyAxOS4yIDEwLjMgMjMuOCAxNiAyMy44QzIxLjcgMjMuOCAyNi4zIDE5LjIgMjYuMyAxMy41QzI2LjMgNy44IDIxLjcgMy4yIDE2IDMuMloiIGZpbGw9IiNkYzM1NDUiLz4KPHBhdGggZD0iTTE2IDhWMTlIMTJWMTZIOVYxMkgxMlY4SDE2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+    />
+
+    <!-- Bootstrap 4 CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- SweetAlert2 for alerts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <!-- Early function definition to prevent cache issues -->
+    <script>
+      // Define showAuditLogs function as early as possible
+      function showAuditLogs() {
+        window.location.href = "audit_logs.html";
+      }
+      window.showAuditLogs = showAuditLogs;
+    </script>
+
+    <style>
+      /* Screen reader only content */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Form validation styling */
+      .form-control.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+
+      .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+      }
+
+      /* Focus management for modals */
+      .modal.show .modal-dialog {
+        transform: none;
+      }
+
+      .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .admin-header {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-gray-dark),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-md);
+      }
+
+      .admin-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .admin-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent-white);
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .campaigns-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .campaign-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card-small {
+        background: var(--accent-white);
+        padding: 1rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+      }
+
+      .stat-number-small {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-red);
+        margin-bottom: 0.5rem;
+      }
+
+      .campaigns-filters {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+      }
+
+      .campaigns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+      }
+
+      .campaign-card {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: transform var(--transition-fast);
+      }
+
+      .campaign-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .campaign-image {
+        height: 200px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-red),
+          var(--primary-red-dark)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-white);
+        font-size: 3rem;
+      }
+
+      .campaign-content {
+        padding: 1.5rem;
+      }
+
+      .campaign-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--secondary-gray-dark);
+      }
+
+      .campaign-description {
+        color: var(--secondary-gray);
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .campaign-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .meta-item {
+        text-align: center;
+      }
+
+      .meta-label {
+        font-size: 0.8rem;
+        color: var(--secondary-gray);
+        margin-bottom: 0.25rem;
+      }
+
+      .meta-value {
+        font-weight: 600;
+        color: var(--secondary-gray-dark);
+      }
+
+      .campaign-progress {
+        margin-bottom: 1rem;
+      }
+
+      .progress-bar-container {
+        background: var(--secondary-gray-light);
+        border-radius: var(--border-radius-lg);
+        height: 8px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background: var(--success-green);
+        transition: width var(--transition-smooth);
+      }
+
+      .campaign-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--border-radius-lg);
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+
+      .status-active {
+        background: var(--success-green);
+        color: var(--accent-white);
+      }
+
+      .status-upcoming {
+        background: var(--info-blue);
+        color: var(--accent-white);
+      }
+
+      .status-completed {
+        background: var(--secondary-gray);
+        color: var(--accent-white);
+      }
+
+      .status-cancelled {
+        background: var(--danger-red);
+        color: var(--accent-white);
+      }
+
+      .campaign-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .action-btn-small {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all var(--transition-fast);
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+      }
+
+      .action-btn-small.edit {
+        background: var(--info-blue);
+        color: var(--accent-white);
+      }
+
+      .action-btn-small.view {
+        background: var(--secondary-gray);
+        color: var(--accent-white);
+      }
+
+      .action-btn-small.delete {
+        background: var(--danger-red);
+        color: var(--accent-white);
+      }
+
+      .action-btn-small:hover {
+        transform: translateY(-1px);
+        text-decoration: none;
+        color: var(--accent-white);
+      }
+
+      .create-campaign-form {
+        max-width: 600px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .date-time-inputs {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 0.75rem;
+        align-items: end;
+      }
+
+      .image-upload-area {
+        border: 2px dashed var(--accent-border);
+        border-radius: var(--border-radius-md);
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color var(--transition-fast);
+      }
+
+      .image-upload-area:hover {
+        border-color: var(--primary-red);
+      }
+
+      .image-upload-area.dragover {
+        border-color: var(--primary-red);
+        background: rgba(220, 53, 69, 0.1);
+      }
+
+      .uploaded-image {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: var(--border-radius-md);
+        margin-top: 1rem;
+      }
+
+      .no-campaigns {
+        text-align: center;
+        padding: 3rem;
+        color: var(--secondary-gray);
+      }
+
+      .no-campaigns i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .campaigns-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .campaigns-header {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: stretch;
+        }
+
+        .campaign-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .date-time-inputs {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+      <div class="container">
+        <nav class="admin-nav">
+          <div class="navbar-brand">
+            <div class="logo-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            RaktaSewa Admin
+          </div>
+
+          <div class="admin-user-info">
+            <div class="admin-avatar" id="adminAvatar">A</div>
+            <div>
+              <div style="font-weight: 500" id="adminName">Loading...</div>
+              <div style="font-size: 0.8rem; opacity: 0.8" id="adminRole">
+                Admin
+              </div>
+            </div>
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="logout()"
+            >
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="manage_hospitals.html" class="sidebar-nav-link">
+                <i class="fas fa-hospital"></i> Manage Hospitals
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="view_campaigns.html" class="sidebar-nav-link active">
+                <i class="fas fa-bullhorn"></i> Campaigns
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="manage_users.html" class="sidebar-nav-link">
+                <i class="fas fa-users"></i> Users Management
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="reports.html" class="sidebar-nav-link">
+                <i class="fas fa-chart-bar"></i> Reports & Analytics
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="settings.html" class="sidebar-nav-link">
+                <i class="fas fa-cogs"></i> System Settings
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="audit_logs.html" class="sidebar-nav-link">
+                <i class="fas fa-clipboard-list"></i> Audit Logs
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Campaign Statistics -->
+        <div class="campaign-stats">
+          <div class="stat-card-small">
+            <div class="stat-number-small" id="totalCampaigns">0</div>
+            <div class="stat-label">Total Campaigns</div>
+          </div>
+          <div class="stat-card-small">
+            <div class="stat-number-small" id="activeCampaigns">0</div>
+            <div class="stat-label">Active Campaigns</div>
+          </div>
+          <div class="stat-card-small">
+            <div class="stat-number-small" id="upcomingCampaigns">0</div>
+            <div class="stat-label">Upcoming Campaigns</div>
+          </div>
+          <div class="stat-card-small">
+            <div class="stat-number-small" id="totalParticipants">0</div>
+            <div class="stat-label">Total Participants</div>
+          </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="campaigns-header">
+          <div>
+            <h2><i class="fas fa-bullhorn"></i> Blood Donation Campaigns</h2>
+            <p>Manage and monitor blood donation campaigns</p>
+          </div>
+          <button class="btn btn-primary" onclick="showCreateCampaignModal()">
+            <i class="fas fa-plus"></i> Create Campaign
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="campaigns-filters">
+          <div class="filter-row">
+            <div class="form-group">
+              <label>Status Filter</label>
+              <select id="statusFilter" class="form-control">
+                <option value="">All Statuses</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Search</label>
+              <input
+                type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="Search campaigns..."
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Date Range</label>
+              <select id="dateFilter" class="form-control">
+                <option value="">All Dates</option>
+                <option value="this_week">This Week</option>
+                <option value="this_month">This Month</option>
+                <option value="next_month">Next Month</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="applyFilters()"
+                >
+                  <i class="fas fa-filter"></i> Apply
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary ml-2"
+                  onclick="clearFilters()"
+                >
+                  <i class="fas fa-times"></i> Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campaigns Grid -->
+        <div id="campaignsContainer">
+          <div class="campaigns-grid" id="campaignsGrid">
+            <!-- Campaigns will be loaded dynamically -->
+          </div>
+
+          <div class="no-campaigns" id="noCampaigns" style="display: none">
+            <i class="fas fa-bullhorn"></i>
+            <h4>No Campaigns Found</h4>
+            <p>
+              No campaigns match your current filters, or no campaigns have been
+              created yet.
+            </p>
+            <button class="btn btn-primary" onclick="showCreateCampaignModal()">
+              <i class="fas fa-plus"></i> Create Your First Campaign
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Campaign Modal -->
+    <div
+      class="modal fade"
+      id="createCampaignModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="createCampaignModalLabel"
+      aria-describedby="createCampaignModalDescription"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createCampaignModalLabel">
+              <i class="fas fa-plus"></i> Create New Campaign
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close modal"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="createCampaignModalDescription" class="sr-only">
+            Form to create a new blood donation campaign with details like
+            title, description, dates, and target donors.
+          </div>
+          <form id="createCampaignForm" class="create-campaign-form" novalidate>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="campaignTitle">Campaign Title *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="campaignTitle"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="campaignDescription">Description *</label>
+                <textarea
+                  class="form-control"
+                  id="campaignDescription"
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="campaignLocation">Location *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="campaignLocation"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="campaignOrganizer">Organizer *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="campaignOrganizer"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="campaignStartDate">Start Date & Time *</label>
+                <div class="date-time-inputs">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="campaignStartDate"
+                    required
+                  />
+                  <input
+                    type="time"
+                    class="form-control"
+                    id="campaignStartTime"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="campaignEndDate">End Date & Time *</label>
+                <div class="date-time-inputs">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="campaignEndDate"
+                    required
+                  />
+                  <input
+                    type="time"
+                    class="form-control"
+                    id="campaignEndTime"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="targetDonors">Target Donors</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="targetDonors"
+                    min="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="maxCapacity">Max Capacity</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="maxCapacity"
+                    min="1"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Campaign Image</label>
+                <div
+                  class="image-upload-area"
+                  onclick="document.getElementById('campaignImage').click()"
+                >
+                  <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                  <p>Click to upload campaign image</p>
+                  <small>Recommended: 800x400px, max 5MB</small>
+                  <input
+                    type="file"
+                    id="campaignImage"
+                    accept="image/*"
+                    style="display: none"
+                    onchange="previewImage(this)"
+                  />
+                  <img
+                    id="imagePreview"
+                    class="uploaded-image"
+                    style="display: none"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="campaignNotes">Additional Notes</label>
+                <textarea
+                  class="form-control"
+                  id="campaignNotes"
+                  rows="3"
+                  placeholder="Any special requirements, contact information, or additional details..."
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Create Campaign
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Campaign Modal -->
+    <div
+      class="modal fade"
+      id="viewCampaignModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="viewCampaignModalLabel"
+      aria-describedby="viewCampaignModalDescription"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewCampaignModalLabel">
+              <i class="fas fa-eye"></i> Campaign Details
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close modal"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="viewCampaignModalDescription" class="sr-only">
+            Detailed view of campaign information including status, dates,
+            participants, and statistics.
+          </div>
+          <div class="modal-body" id="campaignDetailsContent">
+            <!-- Content will be loaded dynamically -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <div id="campaignActionButtons">
+              <!-- Action buttons will be added dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Management Modal -->
+    <div class="modal fade" id="usersModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-users"></i> Users Management
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Users Filter Controls -->
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <select id="userRoleFilter" class="form-control">
+                  <option value="">All Roles</option>
+                  <option value="donor">Donors</option>
+                  <option value="hospital">Hospitals</option>
+                  <option value="admin">Admins</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="userStatusFilter" class="form-control">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="verified">Verified</option>
+                  <option value="unverified">Unverified</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  id="userSearchInput"
+                  class="form-control"
+                  placeholder="Search users..."
+                />
+              </div>
+              <div class="col-md-2">
+                <button
+                  class="btn btn-primary btn-block"
+                  onclick="searchUsers()"
+                >
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center">
+                      <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                      Loading users...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Users Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div>
+                <span id="usersCount">Total: 0 users</span>
+              </div>
+              <div id="usersPagination">
+                <!-- Pagination will be generated here -->
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              onclick="exportUsers()"
+            >
+              <i class="fas fa-download"></i> Export Users
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+      let currentFilters = {};
+
+      // Global modal accessibility setup to prevent aria-hidden focus conflicts
+      function setupModalAccessibility() {
+        // Store the element that triggered each modal
+        let modalTriggers = new Map();
+
+        // Track which element opened which modal
+        $(document).on("click", '[data-toggle="modal"]', function (e) {
+          const targetModal = $(this).attr("data-target");
+          if (targetModal) {
+            modalTriggers.set(targetModal, e.target);
+          }
+        });
+
+        // Global handler for all modals: move focus before hiding
+        $(".modal").on("hide.bs.modal", function (e) {
+          const modalId = "#" + this.id;
+          const activeElement = document.activeElement;
+
+          // Only move focus if the active element is inside this modal
+          if (this.contains(activeElement)) {
+            // Try to return focus to the trigger element
+            const trigger = modalTriggers.get(modalId);
+            if (trigger && trigger.focus) {
+              // Defer focus to next tick to ensure it happens before aria-hidden is set
+              setTimeout(() => trigger.focus(), 0);
+            } else {
+              // Fallback: move focus to body
+              setTimeout(() => document.body.focus(), 0);
+            }
+          }
+        });
+
+        // Clean up trigger references when modal is fully hidden
+        $(".modal").on("hidden.bs.modal", function () {
+          const modalId = "#" + this.id;
+          modalTriggers.delete(modalId);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check admin authentication
+        checkAdminAuth();
+
+        // Load initial data
+        loadCampaigns();
+        loadCampaignStats();
+
+        // Set up event listeners
+        setupEventListeners();
+
+        // Set up global modal focus management to fix aria-hidden warnings
+        setupModalAccessibility();
+      });
+
+      function checkAdminAuth() {
+        Session.checkSession()
+          .then((userData) => {
+            if (!userData || userData.role !== "admin") {
+              Notifications.error("Access Denied", "Admin access required");
+              window.location.href = "../login.html?role=admin";
+              return;
+            }
+
+            // Update admin info
+            document.getElementById("adminName").textContent =
+              userData.full_name;
+            document.getElementById("adminAvatar").textContent =
+              userData.full_name.charAt(0).toUpperCase();
+          })
+          .catch((error) => {
+            console.error("Auth check failed:", error);
+            window.location.href = "../login.html?role=admin";
+          });
+      }
+
+      function setupEventListeners() {
+        // Search input with debounce
+        const searchInput = document.getElementById("searchInput");
+        let searchTimeout;
+        searchInput.addEventListener("input", function () {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            applyFilters();
+          }, 500);
+        });
+
+        // Create campaign form
+        document
+          .getElementById("createCampaignForm")
+          .addEventListener("submit", handleCreateCampaign);
+
+        // Image upload drag & drop
+        setupImageUpload();
+      }
+
+      function setupImageUpload() {
+        const uploadArea = document.querySelector(".image-upload-area");
+
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        uploadArea.addEventListener("drop", handleDrop, false);
+
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        function highlight(e) {
+          uploadArea.classList.add("dragover");
+        }
+
+        function unhighlight(e) {
+          uploadArea.classList.remove("dragover");
+        }
+
+        function handleDrop(e) {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+
+          if (files.length > 0) {
+            document.getElementById("campaignImage").files = files;
+            previewImage({ files: files });
+          }
+        }
+      }
+
+      function loadCampaignStats() {
+        API.get("get_campaign_stats.php")
+          .then((response) => {
+            if (response.success) {
+              const stats = response.data;
+              document.getElementById("totalCampaigns").textContent =
+                stats.total_campaigns || 0;
+              document.getElementById("activeCampaigns").textContent =
+                stats.active_campaigns || 0;
+              document.getElementById("upcomingCampaigns").textContent =
+                stats.upcoming_campaigns || 0;
+              document.getElementById("totalParticipants").textContent =
+                stats.total_participants || 0;
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading campaign stats:", error);
+          });
+      }
+
+      function loadCampaigns() {
+        const filters = {
+          status: document.getElementById("statusFilter").value,
+          search: document.getElementById("searchInput").value,
+          date_range: document.getElementById("dateFilter").value,
+        };
+
+        currentFilters = filters;
+
+        API.get("get_campaigns.php", filters)
+          .then((response) => {
+            if (response.success) {
+              displayCampaigns(response.data);
+            } else {
+              throw new Error(response.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading campaigns:", error);
+            document.getElementById("campaignsGrid").innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i> Error loading campaigns: ${error.message}
+                            </div>
+                        </div>
+                    `;
+          });
+      }
+
+      function displayCampaigns(campaigns) {
+        const grid = document.getElementById("campaignsGrid");
+        const noCampaigns = document.getElementById("noCampaigns");
+
+        if (campaigns.length === 0) {
+          grid.style.display = "none";
+          noCampaigns.style.display = "block";
+          return;
+        }
+
+        grid.style.display = "grid";
+        noCampaigns.style.display = "none";
+
+        grid.innerHTML = campaigns
+          .map(
+            (campaign) => `
+                <div class="campaign-card">
+                    <div class="campaign-image">
+                        ${
+                          campaign.image_path
+                            ? `<img src="../${
+                                campaign.image_path
+                              }" alt="${Utils.escapeHtml(
+                                campaign.title
+                              )}" style="width: 100%; height: 100%; object-fit: cover;">`
+                            : '<i class="fas fa-bullhorn"></i>'
+                        }
+                    </div>
+                    <div class="campaign-content">
+                        <h3 class="campaign-title">${Utils.escapeHtml(
+                          campaign.title
+                        )}</h3>
+                        <p class="campaign-description">${Utils.escapeHtml(
+                          campaign.description
+                        )}</p>
+                        
+                        <div class="campaign-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Location</div>
+                                <div class="meta-value">${Utils.escapeHtml(
+                                  campaign.location
+                                )}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Organizer</div>
+                                <div class="meta-value">${Utils.escapeHtml(
+                                  campaign.organizer
+                                )}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="campaign-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Start Date</div>
+                                <div class="meta-value">${Utils.formatDate(
+                                  campaign.start_date
+                                )}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">End Date</div>
+                                <div class="meta-value">${Utils.formatDate(
+                                  campaign.end_date
+                                )}</div>
+                            </div>
+                        </div>
+                        
+                        ${
+                          campaign.target_donors
+                            ? `
+                        <div class="campaign-progress">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <small>Progress</small>
+                                <small>${campaign.current_donors || 0} / ${
+                                campaign.target_donors
+                              } donors</small>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${Math.min(
+                                  100,
+                                  ((campaign.current_donors || 0) /
+                                    campaign.target_donors) *
+                                    100
+                                )}%"></div>
+                            </div>
+                        </div>
+                        `
+                            : ""
+                        }
+                        
+                        <span class="campaign-status status-${
+                          campaign.status
+                        }">${campaign.status}</span>
+                        
+                        <div class="campaign-actions">
+                            <button class="action-btn-small view" onclick="viewCampaignDetails(${
+                              campaign.id
+                            })">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn-small edit" onclick="editCampaign(${
+                              campaign.id
+                            })">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn-small delete" onclick="deleteCampaign(${
+                              campaign.id
+                            })">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function showCreateCampaignModal() {
+        // Reset form
+        document.getElementById("createCampaignForm").reset();
+        document.getElementById("imagePreview").style.display = "none";
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("campaignStartDate").min = today;
+        document.getElementById("campaignEndDate").min = today;
+
+        // Show modal with proper focus management
+        const modal = $("#createCampaignModal");
+
+        // Handle focus management when modal is shown
+        modal.on("shown.bs.modal", function () {
+          // Focus on the first form input
+          document.getElementById("campaignTitle").focus();
+        });
+
+        // Move focus before modal hides to prevent aria-hidden conflicts
+        modal.on("hide.bs.modal", function () {
+          // Move focus back to the trigger button or document body
+          const createButton = document.querySelector(
+            '[onclick*="showCreateCampaignModal"]'
+          );
+          if (createButton) {
+            createButton.focus();
+          } else {
+            document.body.focus();
+          }
+        });
+
+        // Handle cleanup when modal is hidden
+        modal.on("hidden.bs.modal", function () {
+          modal.off("shown.bs.modal hide.bs.modal hidden.bs.modal");
+        });
+
+        modal.modal("show");
+      }
+
+      function handleCreateCampaign(e) {
+        e.preventDefault();
+
+        // Validate required fields
+        const title = document.getElementById("campaignTitle");
+        const description = document.getElementById("campaignDescription");
+        const startDate = document.getElementById("campaignStartDate");
+        const endDate = document.getElementById("campaignEndDate");
+        const targetDonors = document.getElementById("targetDonors");
+
+        // Clear previous validation states
+        [title, description, startDate, endDate, targetDonors].forEach(
+          (field) => {
+            field.classList.remove("is-invalid");
+            const feedback =
+              field.parentNode.querySelector(".invalid-feedback");
+            if (feedback) feedback.remove();
+          }
+        );
+
+        let isValid = true;
+        let firstInvalidField = null;
+
+        // Validate each required field
+        if (!title.value.trim()) {
+          showFieldError(title, "Campaign title is required");
+          isValid = false;
+          if (!firstInvalidField) firstInvalidField = title;
+        }
+
+        if (!description.value.trim()) {
+          showFieldError(description, "Campaign description is required");
+          isValid = false;
+          if (!firstInvalidField) firstInvalidField = description;
+        }
+
+        if (!startDate.value) {
+          showFieldError(startDate, "Start date is required");
+          isValid = false;
+          if (!firstInvalidField) firstInvalidField = startDate;
+        }
+
+        if (!endDate.value) {
+          showFieldError(endDate, "End date is required");
+          isValid = false;
+          if (!firstInvalidField) firstInvalidField = endDate;
+        } else if (
+          startDate.value &&
+          new Date(endDate.value) <= new Date(startDate.value)
+        ) {
+          showFieldError(endDate, "End date must be after start date");
+          isValid = false;
+          if (!firstInvalidField) firstInvalidField = endDate;
+        }
+
+        if (!targetDonors.value || parseInt(targetDonors.value) < 1) {
+          showFieldError(targetDonors, "Target donors must be at least 1");
+          isValid = false;
+          if (!firstInvalidField) firstInvalidField = targetDonors;
+        }
+
+        if (!isValid) {
+          // Focus on first invalid field for accessibility
+          firstInvalidField.focus();
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("title", title.value);
+        formData.append("description", description.value);
+        formData.append(
+          "location",
+          document.getElementById("campaignLocation").value
+        );
+        formData.append(
+          "organizer",
+          document.getElementById("campaignOrganizer").value
+        );
+        formData.append(
+          "start_date",
+          document.getElementById("campaignStartDate").value
+        );
+        formData.append(
+          "start_time",
+          document.getElementById("campaignStartTime").value
+        );
+        formData.append(
+          "end_date",
+          document.getElementById("campaignEndDate").value
+        );
+        formData.append(
+          "end_time",
+          document.getElementById("campaignEndTime").value
+        );
+        formData.append(
+          "target_donors",
+          document.getElementById("targetDonors").value
+        );
+        formData.append(
+          "max_capacity",
+          document.getElementById("maxCapacity").value
+        );
+        formData.append(
+          "notes",
+          document.getElementById("campaignNotes").value
+        );
+
+        const imageFile = document.getElementById("campaignImage").files[0];
+        if (imageFile) {
+          formData.append("image", imageFile);
+        }
+
+        // Show loading
+        const submitBtn = e.target.querySelector('[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Creating...';
+        submitBtn.disabled = true;
+
+        fetch("../php/create_campaign.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then(async (response) => {
+            const text = await response.text();
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              if (response.status === 404) {
+                throw new Error("Campaign creation API not found (404)");
+              } else {
+                throw new Error(
+                  `Server returned invalid response: ${response.status}`
+                );
+              }
+            }
+          })
+          .then((result) => {
+            if (result.success) {
+              Notifications.success("Success", "Campaign created successfully");
+              $("#createCampaignModal").modal("hide");
+              loadCampaigns();
+              loadCampaignStats();
+            } else {
+              throw new Error(result.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error creating campaign:", error);
+            Notifications.error(
+              "Error",
+              "Failed to create campaign: " + error.message
+            );
+          })
+          .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+          });
+      }
+
+      function showFieldError(field, message) {
+        field.classList.add("is-invalid");
+        field.setAttribute("aria-invalid", "true");
+
+        const feedback = document.createElement("div");
+        feedback.className = "invalid-feedback";
+        feedback.textContent = message;
+        feedback.setAttribute("role", "alert");
+
+        field.parentNode.appendChild(feedback);
+      }
+
+      function previewImage(input) {
+        const file = input.files ? input.files[0] : null;
+        const preview = document.getElementById("imagePreview");
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function viewCampaignDetails(campaignId) {
+        API.get("get_campaign_details.php", { id: campaignId })
+          .then((response) => {
+            if (response.success) {
+              displayCampaignDetails(response.data.campaign);
+
+              // Show modal with proper focus management
+              const modal = $("#viewCampaignModal");
+
+              // Remove any existing event handlers to prevent duplicates
+              modal.off(
+                "shown.bs.modal.campaignDetails hide.bs.modal.campaignDetails hidden.bs.modal.campaignDetails"
+              );
+
+              // Handle focus management when modal is fully shown
+              modal.on("shown.bs.modal.campaignDetails", function () {
+                // Focus on the modal title for better accessibility
+                $(this)
+                  .find(".modal-title")
+                  .first()
+                  .attr("tabindex", "-1")
+                  .focus();
+              });
+
+              // Move focus before modal hides to prevent aria-hidden conflicts
+              modal.on("hide.bs.modal.campaignDetails", function () {
+                // Move focus back to the trigger element
+                const campaignCard = document.querySelector(
+                  `[onclick*="viewCampaignDetails(${campaignId})"]`
+                );
+                if (campaignCard) {
+                  campaignCard.focus();
+                } else {
+                  document.body.focus();
+                }
+              });
+
+              // Handle cleanup when modal is hidden
+              modal.on("hidden.bs.modal.campaignDetails", function () {
+                // Clean up our specific event handlers
+                modal.off(
+                  "shown.bs.modal.campaignDetails hide.bs.modal.campaignDetails hidden.bs.modal.campaignDetails"
+                );
+              });
+
+              modal.modal("show");
+            } else {
+              throw new Error(response.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading campaign details:", error);
+            Notifications.error("Error", "Failed to load campaign details");
+          });
+      }
+
+      function displayCampaignDetails(campaign) {
+        const content = document.getElementById("campaignDetailsContent");
+
+        content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        ${
+                          campaign.image_path
+                            ? `<img src="../${
+                                campaign.image_path
+                              }" alt="${Utils.escapeHtml(
+                                campaign.title
+                              )}" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">`
+                            : '<div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 1rem;"><i class="fas fa-bullhorn fa-3x text-muted"></i></div>'
+                        }
+                        
+                        <h4>${Utils.escapeHtml(
+                          campaign.title || "Campaign"
+                        )}</h4>
+                        <span class="campaign-status status-${
+                          campaign.status || "active"
+                        }">${campaign.status || "active"}</span>
+                        
+                        <p class="mt-3">${Utils.escapeHtml(
+                          campaign.description || "No description available"
+                        )}</p>
+                        
+                        ${
+                          campaign.notes
+                            ? `
+                        <div class="mt-3">
+                            <strong>Additional Notes:</strong>
+                            <p>${Utils.escapeHtml(campaign.notes)}</p>
+                        </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="detail-section">
+                            <h6><i class="fas fa-info-circle"></i> Campaign Information</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Location:</strong></td>
+                                    <td>${Utils.escapeHtml(
+                                      campaign.location || "Not specified"
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Organizer:</strong></td>
+                                    <td>${Utils.escapeHtml(
+                                      campaign.organizer || "Not specified"
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Start Date:</strong></td>
+                                    <td>${
+                                      campaign.start_date_formatted ||
+                                      Utils.formatDate(campaign.start_date)
+                                    }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>End Date:</strong></td>
+                                    <td>${
+                                      campaign.end_date_formatted ||
+                                      Utils.formatDate(campaign.end_date)
+                                    }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created:</strong></td>
+                                    <td>${
+                                      campaign.created_formatted ||
+                                      Utils.formatDate(campaign.created_at)
+                                    }</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        ${
+                          campaign.target_donors
+                            ? `
+                        <div class="detail-section">
+                            <h6><i class="fas fa-users"></i> Registration Statistics</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Target Donors:</strong></td>
+                                    <td>${campaign.target_donors}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Registered:</strong></td>
+                                    <td>${campaign.registered_count || 0}</td>
+                                </tr>
+                                ${
+                                  campaign.max_capacity
+                                    ? `
+                                <tr>
+                                    <td><strong>Max Capacity:</strong></td>
+                                    <td>${campaign.max_capacity}</td>
+                                </tr>
+                                `
+                                    : ""
+                                }
+                                <tr>
+                                    <td><strong>Progress:</strong></td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: ${Math.min(
+                                              100,
+                                              ((campaign.registered_count ||
+                                                0) /
+                                                campaign.target_donors) *
+                                                100
+                                            )}%"></div>
+                                        </div>
+                                        ${Math.round(
+                                          ((campaign.registered_count || 0) /
+                                            campaign.target_donors) *
+                                            100
+                                        )}%
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        `
+                            : ""
+                        }
+                        
+                        ${
+                          campaign.participants &&
+                          campaign.participants.length > 0
+                            ? `
+                        <div class="detail-section">
+                            <h6><i class="fas fa-list"></i> Recent Participants</h6>
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                ${campaign.participants
+                                  .slice(0, 10)
+                                  .map(
+                                    (participant) => `
+                                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                                        <strong>${Utils.escapeHtml(
+                                          participant.full_name
+                                        )}</strong>
+                                        <br><small>Registered: ${Utils.timeAgo(
+                                          participant.registration_date
+                                        )}</small>
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                </div>
+            `;
+      }
+
+      function editCampaign(campaignId) {
+        Notifications.info(
+          "Edit Campaign",
+          "Campaign editing feature coming soon!"
+        );
+      }
+
+      function deleteCampaign(campaignId) {
+        Notifications.confirm(
+          "Delete Campaign",
+          "Are you sure you want to delete this campaign? This action cannot be undone.",
+          {
+            confirmButtonText: "Yes, Delete",
+            confirmButtonColor: "#dc3545",
+            cancelButtonText: "Cancel",
+          }
+        ).then((result) => {
+          if (result.isConfirmed) {
+            API.post("delete_campaign.php", { id: campaignId })
+              .then((response) => {
+                if (response.success) {
+                  Notifications.success(
+                    "Success",
+                    "Campaign deleted successfully"
+                  );
+                  loadCampaigns();
+                  loadCampaignStats();
+                } else {
+                  throw new Error(response.message);
+                }
+              })
+              .catch((error) => {
+                console.error("Error deleting campaign:", error);
+                Notifications.error(
+                  "Error",
+                  "Failed to delete campaign: " + error.message
+                );
+              });
+          }
+        });
+      }
+
+      function applyFilters() {
+        loadCampaigns();
+      }
+
+      function clearFilters() {
+        document.getElementById("statusFilter").value = "";
+        document.getElementById("searchInput").value = "";
+        document.getElementById("dateFilter").value = "";
+        loadCampaigns();
+      }
+
+      // Modal functions for other features
+      function showUsersModal() {
+        const modal = $("#usersModal");
+
+        // Handle focus management when modal is shown
+        modal.on("shown.bs.modal.users", function () {
+          // Focus on the modal title or first interactive element
+          $(this).find(".modal-title").first().attr("tabindex", "-1").focus();
+        });
+
+        // Move focus before modal hides to prevent aria-hidden conflicts
+        modal.on("hide.bs.modal.users", function () {
+          // Move focus back to the trigger element
+          const triggerButton = document.querySelector(
+            '[onclick*="showUsersModal"]'
+          );
+          if (triggerButton) {
+            triggerButton.focus();
+          } else {
+            document.body.focus();
+          }
+        });
+
+        // Handle cleanup when modal is hidden
+        modal.on("hidden.bs.modal.users", function () {
+          modal.off(
+            "shown.bs.modal.users hide.bs.modal.users hidden.bs.modal.users"
+          );
+        });
+
+        modal.modal("show");
+        loadUsers();
+      }
+
+      let currentUsersPage = 1;
+      let usersFilters = {};
+
+      function loadUsers(page = 1) {
+        currentUsersPage = page;
+
+        // Show loading state
+        document.getElementById("usersTableBody").innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center">
+              <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>  
+              </div>
+              Loading users...
+            </td>
+          </tr>
+        `;
+
+        // Get filter values
+        const filters = {
+          role: document.getElementById("userRoleFilter")?.value || "",
+          status: document.getElementById("userStatusFilter")?.value || "",
+          search: document.getElementById("userSearchInput")?.value || "",
+          page: page,
+          limit: 10,
+        };
+
+        API.post("get_users.php", filters)
+          .then((response) => {
+            if (response.success) {
+              displayUsers(response.data.users);
+              updateUsersCount(response.data.total);
+              updateUsersPagination(response.data.pagination);
+            } else {
+              document.getElementById("usersTableBody").innerHTML = `
+                <tr><td colspan="8" class="text-center text-danger">Error: ${response.message}</td></tr>
+              `;
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading users:", error);
+            document.getElementById("usersTableBody").innerHTML = `
+              <tr><td colspan="8" class="text-center text-danger">Failed to load users</td></tr>
+            `;
+          });
+      }
+
+      function displayUsers(users) {
+        const tbody = document.getElementById("usersTableBody");
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = `
+            <tr><td colspan="8" class="text-center text-muted">No users found</td></tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = users
+          .map((user) => {
+            const statusBadge = getStatusBadge(user);
+            const roleBadge = getRoleBadge(user.role);
+
+            return `
+            <tr>
+              <td>${user.id}</td>
+              <td>${Utils.escapeHtml(user.username)}</td>
+              <td>${Utils.escapeHtml(user.email)}</td>
+              <td>${Utils.escapeHtml(user.full_name || "N/A")}</td>
+              <td>${roleBadge}</td>
+              <td>${statusBadge}</td>
+              <td>${new Date(user.created_at).toLocaleDateString()}</td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-info" onclick="viewUserDetails(${
+                    user.id
+                  })" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-warning" onclick="editUser(${
+                    user.id
+                  })" title="Edit User">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  ${
+                    user.is_active
+                      ? `<button class="btn btn-secondary" onclick="deactivateUser(${user.id})" title="Deactivate">
+                      <i class="fas fa-ban"></i>
+                    </button>`
+                      : `<button class="btn btn-success" onclick="activateUser(${user.id})" title="Activate">
+                      <i class="fas fa-check"></i>
+                    </button>`
+                  }
+                </div>
+              </td>
+            </tr>
+          `;
+          })
+          .join("");
+      }
+
+      function getStatusBadge(user) {
+        if (!user.is_active) {
+          return '<span class="badge badge-secondary">Inactive</span>';
+        }
+        if (user.is_verified) {
+          return '<span class="badge badge-success">Verified</span>';
+        }
+        return '<span class="badge badge-warning">Unverified</span>';
+      }
+
+      function getRoleBadge(role) {
+        const badges = {
+          admin: '<span class="badge badge-danger">Admin</span>',
+          hospital: '<span class="badge badge-primary">Hospital</span>',
+          donor: '<span class="badge badge-info">Donor</span>',
+        };
+        return badges[role] || `<span class="badge badge-light">${role}</span>`;
+      }
+
+      function searchUsers() {
+        loadUsers(1);
+      }
+
+      function updateUsersCount(total) {
+        document.getElementById(
+          "usersCount"
+        ).textContent = `Total: ${total} users`;
+      }
+
+      function updateUsersPagination(pagination) {
+        const container = document.getElementById("usersPagination");
+        if (!pagination || pagination.totalPages <= 1) {
+          container.innerHTML = "";
+          return;
+        }
+
+        let paginationHTML = '<nav><ul class="pagination pagination-sm mb-0">';
+
+        // Previous page
+        if (pagination.currentPage > 1) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadUsers(${
+            pagination.currentPage - 1
+          })">Previous</a></li>`;
+        }
+
+        // Page numbers
+        for (
+          let i = Math.max(1, pagination.currentPage - 2);
+          i <= Math.min(pagination.totalPages, pagination.currentPage + 2);
+          i++
+        ) {
+          paginationHTML += `<li class="page-item ${
+            i === pagination.currentPage ? "active" : ""
+          }">
+            <a class="page-link" href="#" onclick="loadUsers(${i})">${i}</a>
+          </li>`;
+        }
+
+        // Next page
+        if (pagination.currentPage < pagination.totalPages) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadUsers(${
+            pagination.currentPage + 1
+          })">Next</a></li>`;
+        }
+
+        paginationHTML += "</ul></nav>";
+        container.innerHTML = paginationHTML;
+      }
+
+      function viewUserDetails(userId) {
+        Notifications.info(
+          "User Details",
+          "User details feature will be implemented soon!"
+        );
+      }
+
+      function editUser(userId) {
+        Notifications.info(
+          "Edit User",
+          "User editing feature will be implemented soon!"
+        );
+      }
+
+      function activateUser(userId) {
+        Notifications.confirm(
+          "Activate User",
+          "Are you sure you want to activate this user?"
+        ).then((result) => {
+          if (result.isConfirmed) {
+            API.post("update_user_status.php", {
+              user_id: userId,
+              action: "activate",
+            }).then((response) => {
+              if (response.success) {
+                Notifications.success("Success", "User activated successfully");
+                loadUsers(currentUsersPage);
+              } else {
+                Notifications.error("Error", response.message);
+              }
+            });
+          }
+        });
+      }
+
+      function deactivateUser(userId) {
+        Notifications.confirm(
+          "Deactivate User",
+          "Are you sure you want to deactivate this user?"
+        ).then((result) => {
+          if (result.isConfirmed) {
+            API.post("update_user_status.php", {
+              user_id: userId,
+              action: "deactivate",
+            }).then((response) => {
+              if (response.success) {
+                Notifications.success(
+                  "Success",
+                  "User deactivated successfully"
+                );
+                loadUsers(currentUsersPage);
+              } else {
+                Notifications.error("Error", response.message);
+              }
+            });
+          }
+        });
+      }
+
+      function exportUsers() {
+        Notifications.info(
+          "Export Users",
+          "Users export feature will be implemented soon!"
+        );
+      }
+
+      function showReportsModal() {
+        Notifications.info(
+          "Reports & Analytics",
+          "Advanced reporting feature coming soon!"
+        );
+      }
+
+      // Fallback function for browser cache compatibility
+      function showAuditLogs() {
+        console.log("Redirecting to audit logs page...");
+        window.location.href = "audit_logs.html";
+      }
+
+      // Override any cached versions
+      window.showAuditLogs = function () {
+        window.location.href = "audit_logs.html";
+      };
+
+      // Ensure function is available on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Force override any cached function definitions
+        if (
+          typeof window.showAuditLogs !== "function" ||
+          window.showAuditLogs.toString().includes("coming soon")
+        ) {
+          window.showAuditLogs = function () {
+            window.location.href = "audit_logs.html";
+          };
+        }
+      });
+
+      function logout() {
+        Notifications.confirm(
+          "Logout",
+          "Are you sure you want to logout?"
+        ).then((result) => {
+          if (result.isConfirmed) {
+            Session.logout()
+              .then(() => {
+                window.location.href = "../index.html";
+              })
+              .catch(() => {
+                window.location.href = "../index.html";
+              });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

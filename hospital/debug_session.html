@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debug Hospital Session</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="card">
+        <div class="card-header">
+          <h3>Hospital Session Debug</h3>
+        </div>
+        <div class="card-body">
+          <div id="sessionInfo">
+            <p>Loading session information...</p>
+          </div>
+          <hr />
+          <button class="btn btn-primary" onclick="checkSession()">
+            Refresh Session
+          </button>
+          <a href="appointments.html" class="btn btn-secondary"
+            >Go to Appointments</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+      function displaySessionInfo(user) {
+        const div = document.getElementById("sessionInfo");
+        if (!user) {
+          div.innerHTML =
+            '<div class="alert alert-danger">No user session found!</div>';
+          return;
+        }
+
+        div.innerHTML = `
+                <h4>Current Session Data:</h4>
+                <table class="table table-bordered">
+                    <tr><th>User ID</th><td>${
+                      user.user_id || "NOT SET"
+                    }</td></tr>
+                    <tr><th>Username</th><td>${
+                      user.username || "NOT SET"
+                    }</td></tr>
+                    <tr><th>Full Name</th><td>${
+                      user.full_name || "NOT SET"
+                    }</td></tr>
+                    <tr><th>Email</th><td>${user.email || "NOT SET"}</td></tr>
+                    <tr><th>Role</th><td>${user.role || "NOT SET"}</td></tr>
+                    <tr><th>Hospital ID</th><td><strong>${
+                      user.hospital_id || "NOT SET"
+                    }</strong></td></tr>
+                    <tr><th>Hospital Name</th><td>${
+                      user.hospital_name || "NOT SET"
+                    }</td></tr>
+                </table>
+                <div class="alert ${
+                  user.hospital_id ? "alert-success" : "alert-danger"
+                }">
+                    ${
+                      user.hospital_id
+                        ? '<i class="fas fa-check-circle"></i> Hospital ID is set correctly!'
+                        : '<i class="fas fa-exclamation-triangle"></i> <strong>ERROR:</strong> Hospital ID is missing! This will cause the appointments page to fail.'
+                    }
+                </div>
+                <h5>Full Session Object:</h5>
+                <pre>${JSON.stringify(user, null, 2)}</pre>
+            `;
+      }
+
+      function checkSession() {
+        if (typeof Session !== "undefined" && Session.isLoggedIn()) {
+          const user = Session.getCurrentUser();
+          displaySessionInfo(user);
+        } else {
+          document.getElementById("sessionInfo").innerHTML =
+            '<div class="alert alert-warning">Not logged in. Please <a href="../login.html">login</a> first.</div>';
+        }
+      }
+
+      // Check on page load
+      document.addEventListener("DOMContentLoaded", checkSession);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Donors - RaktSewa Hospital</title>
+    <meta
+      name="description"
+      content="RaktSewa Hospital - Donor Management and Registration"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDMuMkMxMC4zIDMuMiA1LjcgNy44IDUuNyAxMy41QzUuNyAxOS4yIDEwLjMgMjMuOCAxNiAyMy44QzIxLjcgMjMuOCAyNi4zIDE5LjIgMjYuMyAxMy41QzI2LjMgNy44IDIxLjcgMy4yIDE2IDMuMloiIGZpbGw9IiNkYzM1NDUiLz4KPHBhdGggZD0iTTE2IDhWMTlIMTJWMTZIOVYxMkgxMlY4SDE2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- SweetAlert2 for alerts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <style>
+      .hospital-header {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-gray-dark),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .hospital-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white !important;
+        text-decoration: none;
+      }
+
+      .logo-icon {
+        background: var(--accent-white);
+        color: var(--primary-red);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+      }
+
+      .hospital-user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: white;
+      }
+
+      .hospital-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .admin-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 1rem;
+      }
+
+      .donors-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card-donor {
+        background: var(--accent-white);
+        padding: 1rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+      }
+
+      .stat-number-donor {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-red);
+        margin-bottom: 0.25rem;
+      }
+
+      .donors-filters {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+      }
+
+      .donors-table-container {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+      }
+
+      .donors-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .donors-table th {
+        background: var(--secondary-gray-light);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid var(--accent-border);
+      }
+
+      .donors-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--accent-border);
+        vertical-align: middle;
+      }
+
+      .donors-table tr:hover {
+        background: rgba(220, 53, 69, 0.05);
+      }
+
+      .donor-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-red);
+        color: var(--accent-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 0.75rem;
+      }
+
+      .donor-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .donor-details {
+        flex: 1;
+      }
+
+      .donor-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .donor-meta {
+        font-size: 0.8rem;
+        color: var(--secondary-gray);
+      }
+
+      .blood-type-badge {
+        background: var(--primary-red);
+        color: var(--accent-white);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--border-radius-lg);
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .eligibility-status {
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .eligibility-status.eligible {
+        background: var(--success-green);
+        color: var(--accent-white);
+      }
+
+      .eligibility-status.ineligible {
+        background: var(--danger-red);
+        color: var(--accent-white);
+      }
+
+      .eligibility-status.pending {
+        background: var(--warning-orange);
+        color: var(--accent-white);
+      }
+
+      .donor-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .action-btn-small {
+        padding: 0.25rem 0.5rem;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all var(--transition-fast);
+      }
+
+      .action-btn-small.view {
+        background: var(--info-blue);
+        color: var(--accent-white);
+      }
+
+      .action-btn-small.schedule {
+        background: var(--success-green);
+        color: var(--accent-white);
+      }
+
+      .action-btn-small.contact {
+        background: var(--warning-orange);
+        color: var(--accent-white);
+      }
+
+      .action-btn-small:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .donor-details-modal {
+        max-width: 800px;
+      }
+
+      .donor-details-modal .modal-footer .btn {
+        padding: 0.6rem 1.4rem;
+        font-size: 0.95rem;
+        min-width: 120px;
+      }
+
+      .detail-tabs {
+        border-bottom: 2px solid var(--accent-border);
+        margin-bottom: 1.5rem;
+      }
+
+      .tab-button {
+        background: none;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+        color: var(--secondary-gray);
+        border-bottom: 3px solid transparent;
+        transition: all var(--transition-fast);
+      }
+
+      .tab-button.active {
+        color: var(--primary-red);
+        border-bottom-color: var(--primary-red);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .donation-history-item {
+        background: var(--secondary-gray-light);
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        margin-bottom: 0.5rem;
+      }
+
+      .donation-date {
+        font-weight: 600;
+        color: var(--primary-red);
+      }
+
+      .add-donor-form {
+        max-width: 600px;
+      }
+
+      .form-step {
+        display: none;
+      }
+
+      .form-step.active {
+        display: block;
+      }
+
+      .step-indicators {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+
+      .step-indicator {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--secondary-gray-light);
+        color: var(--secondary-gray);
+        margin: 0 0.5rem;
+        font-weight: bold;
+      }
+
+      .step-indicator.active {
+        background: var(--primary-red);
+        color: var(--accent-white);
+      }
+
+      .step-indicator.completed {
+        background: var(--success-green);
+        color: var(--accent-white);
+      }
+
+      @media (max-width: 768px) {
+        .donors-table-container {
+          overflow-x: auto;
+        }
+
+        .donor-actions {
+          flex-direction: column;
+        }
+
+        .donors-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      /* Ensure sidebar links have no underlines */
+      .sidebar-nav-link {
+        text-decoration: none !important;
+      }
+
+      .sidebar-nav-link:hover,
+      .sidebar-nav-link:focus,
+      .sidebar-nav-link.active {
+        text-decoration: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hospital Header -->
+    <header class="hospital-header">
+      <div class="container">
+        <nav class="hospital-nav">
+          <div class="navbar-brand">
+            <div class="logo-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            RaktSewa Hospital
+          </div>
+
+          <div class="hospital-user-info">
+            <div class="hospital-avatar" id="hospitalAvatar">H</div>
+            <div>
+              <div style="font-weight: 500" id="hospitalName">Loading...</div>
+              <div style="font-size: 0.8rem; opacity: 0.8" id="hospitalType">
+                General Hospital
+              </div>
+            </div>
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="logout()"
+            >
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="admin-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="manage_donors.html" class="sidebar-nav-link active">
+                <i class="fas fa-users"></i> Manage Donors
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="update_status.html" class="sidebar-nav-link">
+                <i class="fas fa-warehouse"></i> Blood Inventory
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="appointments.html" class="sidebar-nav-link">
+                <i class="fas fa-calendar-check"></i> Appointments
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="emergency_dashboard.html" class="sidebar-nav-link">
+                <i class="fas fa-ambulance"></i> Emergency
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="reports.html" class="sidebar-nav-link">
+                <i class="fas fa-chart-bar"></i> Reports
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Donor Statistics -->
+        <div class="donors-stats">
+          <div class="stat-card-donor">
+            <div class="stat-number-donor" id="totalDonors">0</div>
+            <div class="stat-label">Total Donors</div>
+          </div>
+          <div class="stat-card-donor">
+            <div class="stat-number-donor" id="eligibleDonors">0</div>
+            <div class="stat-label">Eligible Donors</div>
+          </div>
+          <div class="stat-card-donor">
+            <div class="stat-number-donor" id="recentDonors">0</div>
+            <div class="stat-label">Donated This Month</div>
+          </div>
+          <div class="stat-card-donor">
+            <div class="stat-number-donor" id="newDonors">0</div>
+            <div class="stat-label">New This Week</div>
+          </div>
+        </div>
+
+        <!-- Page Header -->
+        <div
+          class="page-header"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+          "
+        >
+          <div>
+            <h2><i class="fas fa-users"></i> Manage Donors</h2>
+            <p>View, add, and manage blood donors</p>
+          </div>
+          <button class="btn btn-primary" onclick="showAddDonorModal()">
+            <i class="fas fa-user-plus"></i> Add New Donor
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="donors-filters">
+          <div class="filter-row">
+            <div class="form-group">
+              <label>Search</label>
+              <input
+                type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="Search by name, phone, or donor ID..."
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Blood Type</label>
+              <select id="bloodTypeFilter" class="form-control">
+                <option value="">All Blood Types</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Eligibility Status</label>
+              <select id="eligibilityFilter" class="form-control">
+                <option value="">All Statuses</option>
+                <option value="eligible">Eligible</option>
+                <option value="ineligible">Ineligible</option>
+                <option value="pending">Pending Review</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Location</label>
+              <select id="locationFilter" class="form-control">
+                <option value="">All Locations</option>
+                <!-- Options will be populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="applyFilters()"
+                >
+                  <i class="fas fa-filter"></i> Filter
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary ml-2"
+                  onclick="clearFilters()"
+                >
+                  <i class="fas fa-times"></i> Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donors Table -->
+        <div class="donors-table-container">
+          <div class="card-header">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h4><i class="fas fa-list"></i> Donors List</h4>
+              <div>
+                <span id="resultsCount">Loading...</span>
+                <button
+                  class="btn btn-success btn-sm ml-2"
+                  onclick="exportDonors()"
+                >
+                  <i class="fas fa-download"></i> Export
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="donors-table">
+              <thead>
+                <tr>
+                  <th>Donor Information</th>
+                  <th>Blood Type</th>
+                  <th>Contact</th>
+                  <th>Last Donation</th>
+                  <th>Eligibility</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="donorsTableBody">
+                <tr>
+                  <td colspan="6" class="text-center">
+                    <div class="loading-spinner">
+                      <i class="fas fa-spinner fa-spin"></i> Loading donors...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-container">
+            <div class="pagination" id="paginationContainer">
+              <!-- Pagination will be generated dynamically -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Donor Details Modal -->
+    <div class="modal fade" id="donorDetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-lg donor-details-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-user"></i> Donor Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="detail-tabs">
+              <button class="tab-button active" onclick="switchTab('info')">
+                Basic Info
+              </button>
+              <button class="tab-button" onclick="switchTab('history')">
+                Donation History
+              </button>
+              <button class="tab-button" onclick="switchTab('medical')">
+                Medical Info
+              </button>
+            </div>
+
+            <div id="tab-info" class="tab-content active">
+              <div id="donorBasicInfo">
+                <!-- Basic info will be loaded here -->
+              </div>
+            </div>
+
+            <div id="tab-history" class="tab-content">
+              <div id="donorHistory">
+                <!-- Donation history will be loaded here -->
+              </div>
+            </div>
+
+            <div id="tab-medical" class="tab-content">
+              <div id="donorMedical">
+                <!-- Medical information will be loaded here -->
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <div id="donorActionButtons">
+              <!-- Action buttons will be added based on donor status -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Donor Modal -->
+    <div class="modal fade" id="addDonorModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-user-plus"></i> Add New Donor
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="addDonorForm" class="add-donor-form">
+            <div class="modal-body">
+              <div class="step-indicators">
+                <div class="step-indicator active" data-step="1">1</div>
+                <div class="step-indicator" data-step="2">2</div>
+                <div class="step-indicator" data-step="3">3</div>
+              </div>
+
+              <!-- Step 1: Basic Information -->
+              <div class="form-step active" data-step="1">
+                <h6>Basic Information</h6>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="donorFullName">Full Name *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="donorFullName"
+                      required
+                    />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="donorEmail">Email Address</label>
+                    <input type="email" class="form-control" id="donorEmail" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="donorPhone">Phone Number *</label>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="donorPhone"
+                      required
+                    />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="donorDob">Date of Birth *</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="donorDob"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="donorGender">Gender *</label>
+                    <select class="form-control" id="donorGender" required>
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="donorBloodType">Blood Type *</label>
+                    <select class="form-control" id="donorBloodType" required>
+                      <option value="">Select Blood Type</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Contact & Address -->
+              <div class="form-step" data-step="2">
+                <h6>Contact & Address Information</h6>
+                <div class="form-group">
+                  <label for="donorAddress">Address *</label>
+                  <textarea
+                    class="form-control"
+                    id="donorAddress"
+                    rows="2"
+                    required
+                  ></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="donorCity">City *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="donorCity"
+                      required
+                    />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="donorState">State *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="donorState"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="donorPostalCode">Postal Code</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="donorPostalCode"
+                    />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="emergencyContact">Emergency Contact</label>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="emergencyContact"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Medical Information -->
+              <div class="form-step" data-step="3">
+                <h6>Medical Information & Eligibility</h6>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="donorWeight">Weight (kg) *</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="donorWeight"
+                      min="45"
+                      required
+                    />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="lastDonation">Last Donation Date</label>
+                    <input type="date" class="form-control" id="lastDonation" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Medical Conditions (Check all that apply)</label>
+                  <div class="form-check-list">
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="condition1"
+                        value="diabetes"
+                      />
+                      <label class="form-check-label" for="condition1"
+                        >Diabetes</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="condition2"
+                        value="hypertension"
+                      />
+                      <label class="form-check-label" for="condition2"
+                        >Hypertension</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="condition3"
+                        value="heart_disease"
+                      />
+                      <label class="form-check-label" for="condition3"
+                        >Heart Disease</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="condition4"
+                        value="none"
+                      />
+                      <label class="form-check-label" for="condition4"
+                        >None of the above</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="additionalNotes">Additional Notes</label>
+                  <textarea
+                    class="form-control"
+                    id="additionalNotes"
+                    rows="3"
+                    placeholder="Any additional medical information or notes..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                id="prevStepBtn"
+                onclick="prevStep()"
+                style="display: none"
+              >
+                <i class="fas fa-arrow-left"></i> Previous
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="nextStepBtn"
+                onclick="nextStep()"
+              >
+                Next <i class="fas fa-arrow-right"></i>
+              </button>
+              <button
+                type="submit"
+                class="btn btn-success"
+                id="submitDonorBtn"
+                style="display: none"
+              >
+                <i class="fas fa-save"></i> Add Donor
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+      let currentPage = 1;
+      let currentStep = 1;
+      let currentDonors = [];
+
+      // Ensure calculateAge function is available
+      function calculateAge(dateOfBirth) {
+        if (!dateOfBirth) return "Unknown";
+        const today = new Date();
+        const birthDate = new Date(dateOfBirth);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+
+        return age;
+      }
+
+      // Ensure Utils object exists with calculateAge
+      if (typeof Utils === "undefined") {
+        window.Utils = {};
+      }
+      if (!Utils.calculateAge) {
+        Utils.calculateAge = calculateAge;
+      }
+      let currentFilters = {};
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check hospital authentication
+        checkHospitalAuth();
+
+        // Load initial data
+        loadDonors();
+        loadDonorStats();
+        loadLocationOptions();
+
+        // Set up event listeners
+        setupEventListeners();
+
+        // Handle URL parameters for search
+        handleURLParameters();
+      });
+
+      function checkHospitalAuth() {
+        Session.checkSession()
+          .then((userData) => {
+            console.log("Manage Donors - Current user object:", userData);
+            
+            if (!userData || userData.role !== "hospital") {
+              Notifications.error("Access Denied", "Hospital access required");
+              window.location.href = "../login.html?role=hospital";
+              return;
+            }
+
+            // Update hospital info
+            const displayName = userData.hospital_name || userData.full_name || "Hospital Admin";
+            document.getElementById("hospitalName").textContent = displayName;
+            console.log("Set hospital name to:", displayName);
+            
+            const hospitalType = userData.hospital_type || "General Hospital";
+            document.getElementById("hospitalType").textContent = hospitalType;
+            
+            document.getElementById("hospitalAvatar").textContent = (
+              userData.hospital_name || userData.full_name || "Hospital"
+            )
+              .charAt(0)
+              .toUpperCase();
+          })
+          .catch((error) => {
+            console.error("Auth check failed:", error);
+            window.location.href = "../login.html?role=hospital";
+          });
+      }
+
+      function setupEventListeners() {
+        // Search input with debounce
+        const searchInput = document.getElementById("searchInput");
+        let searchTimeout;
+        searchInput.addEventListener("input", function () {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            applyFilters();
+          }, 500);
+        });
+
+        // Add donor form
+        document
+          .getElementById("addDonorForm")
+          .addEventListener("submit", handleAddDonor);
+      }
+
+      function handleURLParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const search = urlParams.get("search");
+        const bloodType = urlParams.get("blood_type");
+
+        if (search) {
+          document.getElementById("searchInput").value = search;
+        }
+        if (bloodType) {
+          document.getElementById("bloodTypeFilter").value = bloodType;
+        }
+
+        if (search || bloodType) {
+          applyFilters();
+        }
+      }
+
+      function loadDonorStats() {
+        API.get("get_donor_stats.php")
+          .then((response) => {
+            if (response.success) {
+              const stats = response.data;
+              document.getElementById("totalDonors").textContent =
+                stats.total_donors || 0;
+              document.getElementById("eligibleDonors").textContent =
+                stats.eligible_donors || 0;
+              document.getElementById("recentDonors").textContent =
+                stats.recent_donors || 0;
+              document.getElementById("newDonors").textContent =
+                stats.new_donors || 0;
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading donor stats:", error);
+          });
+      }
+
+      function loadLocationOptions() {
+        API.get("get_donor_cities.php")
+          .then((response) => {
+            if (response.success) {
+              const locationSelect = document.getElementById("locationFilter");
+              const cities = response.data;
+
+              locationSelect.innerHTML =
+                '<option value="">All Locations</option>';
+              cities.forEach((city) => {
+                locationSelect.innerHTML += `<option value="${city.city}">${city.city} (${city.count})</option>`;
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading cities:", error);
+          });
+      }
+
+      function loadDonors(page = 1) {
+        currentPage = page;
+        const filters = {
+          page: page,
+          search: document.getElementById("searchInput").value,
+          blood_type: document.getElementById("bloodTypeFilter").value,
+          eligibility: document.getElementById("eligibilityFilter").value,
+          location: document.getElementById("locationFilter").value,
+        };
+
+        currentFilters = filters;
+
+        API.get("get_donors.php", filters)
+          .then((response) => {
+            if (response.success) {
+              currentDonors = response.data.donors || [];
+              displayDonors(response.data.donors);
+              updatePagination(response.data.pagination);
+              updateResultsCount(response.data.pagination.total);
+            } else {
+              throw new Error(response.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading donors:", error);
+            document.getElementById("donorsTableBody").innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-danger">
+                                <i class="fas fa-exclamation-triangle"></i> Error loading donors: ${error.message}
+                            </td>
+                        </tr>
+                    `;
+          });
+      }
+
+      function normalizeEligibilityStatus(eligibility) {
+        const rawStatus =
+          typeof eligibility === "string"
+            ? eligibility
+            : eligibility?.status || eligibility?.color || eligibility?.state;
+        const statusValue = String(rawStatus || "").toLowerCase();
+        const status = ["eligible", "ineligible", "pending"].includes(
+          statusValue
+        )
+          ? statusValue
+          : "pending";
+        const label =
+          typeof eligibility === "string"
+            ? eligibility
+            : eligibility?.text || eligibility?.label || "";
+
+        return {
+          status,
+          label: label || getEligibilityLabel(status),
+        };
+      }
+
+      function getEligibilityLabel(status) {
+        switch (status) {
+          case "eligible":
+            return "Eligible to donate";
+          case "ineligible":
+            return "Currently ineligible";
+          case "pending":
+          default:
+            return "Eligibility pending";
+        }
+      }
+
+      function getEligibilityDaysRemaining(lastDonation) {
+        if (!lastDonation) {
+          return null;
+        }
+        const lastDate = new Date(lastDonation);
+        if (Number.isNaN(lastDate.getTime())) {
+          return null;
+        }
+
+        const nextEligible = new Date(lastDate);
+        nextEligible.setDate(nextEligible.getDate() + 90);
+
+        const today = new Date();
+        const diffMs = nextEligible - today;
+        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        return days > 0 ? days : 0;
+      }
+
+      function getEligibilityIcon(status) {
+        switch (status) {
+          case "eligible":
+            return '<i class="fas fa-check-circle"></i>';
+          case "ineligible":
+            return '<i class="fas fa-times-circle"></i>';
+          case "pending":
+          default:
+            return '<i class="fas fa-clock"></i>';
+        }
+      }
+
+      function getEligibilityBadgeForDonor(donor) {
+        const { status, label } = normalizeEligibilityStatus(
+          donor?.eligibility_status
+        );
+        let displayLabel = label;
+
+        if (status === "ineligible") {
+          const daysRemaining = getEligibilityDaysRemaining(
+            donor?.last_donation_any || donor?.last_donation
+          );
+          if (typeof daysRemaining === "number") {
+            displayLabel = `Eligible in ${daysRemaining} day${
+              daysRemaining === 1 ? "" : "s"
+            }`;
+          }
+        }
+
+        return `
+            <div class="eligibility-status ${status}">
+              ${getEligibilityIcon(status)}
+              <span>${Utils.escapeHtml(displayLabel)}</span>
+            </div>
+          `;
+      }
+
+      function getEligibilityTextForDonor(donor) {
+        const { status, label } = normalizeEligibilityStatus(
+          donor?.eligibility_status
+        );
+        let displayLabel = label;
+
+        if (status === "ineligible") {
+          const daysRemaining = getEligibilityDaysRemaining(
+            donor?.last_donation_any || donor?.last_donation
+          );
+          if (typeof daysRemaining === "number") {
+            displayLabel = `Eligible in ${daysRemaining} day${
+              daysRemaining === 1 ? "" : "s"
+            }`;
+          }
+        }
+
+        return Utils.escapeHtml(displayLabel);
+      }
+
+      function displayDonors(donors) {
+        const tbody = document.getElementById("donorsTableBody");
+
+        if (donors.length === 0) {
+          tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <i class="fas fa-search"></i> No donors found matching your criteria
+                        </td>
+                    </tr>
+                `;
+          return;
+        }
+
+        tbody.innerHTML = donors
+          .map(
+            (donor) => `
+                <tr>
+                    <td>
+                        <div class="donor-info">
+                            <div class="donor-avatar">${donor.full_name
+                              .charAt(0)
+                              .toUpperCase()}</div>
+                            <div class="donor-details">
+                                <div class="donor-name">${Utils.escapeHtml(
+                                  donor.full_name
+                                )}</div>
+                                <div class="donor-meta">
+                                    Age: ${calculateAge(
+                                      donor.date_of_birth
+                                    )}${formatDonorLocation(donor)}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="blood-type-badge">${
+                          donor.blood_type
+                        }</span>
+                    </td>
+                    <td>
+                        <div>${Utils.escapeHtml(donor.phone)}</div>
+                        ${
+                          donor.email
+                            ? `<small class="text-muted">${Utils.escapeHtml(
+                                donor.email
+                              )}</small>`
+                            : ""
+                        }
+                    </td>
+                    <td>
+                        ${
+                          donor.last_donation
+                            ? `<div>${Utils.formatDate(
+                                donor.last_donation
+                              )}</div><small class="text-muted">${Utils.timeAgo(
+                                donor.last_donation
+                              )}</small>`
+                            : '<span class="text-muted">Never donated</span>'
+                        }
+                    </td>
+                    <td>
+                      <div>${getEligibilityTextForDonor(donor)}</div>
+                    </td>
+                    <td>
+                        <div class="donor-actions">
+                            <button class="action-btn-small view" onclick="viewDonorDetails(${
+                              donor.id
+                            })" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn-small schedule" onclick="scheduleDonation(${
+                              donor.id
+                            })" title="Schedule Donation">
+                                <i class="fas fa-calendar-plus"></i>
+                            </button>
+                            <button class="action-btn-small contact" onclick="contactDonor('${
+                              donor.phone
+                            }')" title="Contact">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      }
+
+      function calculateAge(birthDate) {
+        if (!birthDate) {
+          return "N/A";
+        }
+        const today = new Date();
+        const birth = new Date(birthDate);
+        if (Number.isNaN(birth.getTime())) {
+          return "N/A";
+        }
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
+          age--;
+        }
+
+        return age;
+      }
+
+      function updatePagination(pagination) {
+        const totalPages = pagination.total_pages;
+        const container = document.getElementById("paginationContainer");
+
+        if (totalPages <= 1) {
+          container.innerHTML = "";
+          return;
+        }
+
+        let html = "";
+
+        // Previous button
+        html += `<button class="page-btn" ${
+          currentPage === 1 ? "disabled" : ""
+        } onclick="loadDonors(${currentPage - 1})">
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>`;
+
+        // Page numbers
+        for (
+          let i = Math.max(1, currentPage - 2);
+          i <= Math.min(totalPages, currentPage + 2);
+          i++
+        ) {
+          html += `<button class="page-btn ${
+            i === currentPage ? "active" : ""
+          }" onclick="loadDonors(${i})">${i}</button>`;
+        }
+
+        // Next button
+        html += `<button class="page-btn" ${
+          currentPage === totalPages ? "disabled" : ""
+        } onclick="loadDonors(${currentPage + 1})">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>`;
+
+        container.innerHTML = html;
+      }
+
+      function updateResultsCount(total) {
+        document.getElementById("resultsCount").textContent = `${total} donor${
+          total !== 1 ? "s" : ""
+        } found`;
+      }
+
+      function applyFilters() {
+        loadDonors(1);
+      }
+
+      function formatDonorLocation(donor) {
+        const city = donor?.city && donor.city !== "Not specified"
+          ? donor.city.trim()
+          : "";
+        const state = donor?.state && donor.state !== "Not specified"
+          ? donor.state.trim()
+          : "";
+        const parts = [city, state].filter(Boolean);
+        if (parts.length === 0) {
+          return "";
+        }
+        return ` • ${Utils.escapeHtml(parts.join(", "))}`;
+      }
+
+      function clearFilters() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("bloodTypeFilter").value = "";
+        document.getElementById("eligibilityFilter").value = "";
+        document.getElementById("locationFilter").value = "";
+        loadDonors(1);
+      }
+
+      function viewDonorDetails(donorId) {
+        if (!donorId) {
+          Notifications.error("Error", "Invalid donor ID");
+          return;
+        }
+
+        API.get("get_donor_details.php", { user_id: donorId })
+          .then((response) => {
+            if (response.success) {
+              displayDonorDetails(response.data);
+              const modal = new bootstrap.Modal(
+                document.getElementById("donorDetailsModal")
+              );
+              modal.show();
+            } else {
+              throw new Error(
+                response.message || "Failed to load donor details"
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading donor details:", error);
+            Notifications.error(
+              "Error",
+              "Failed to load donor details: " + error.message
+            );
+          });
+      }
+
+      function displayDonorDetails(donor) {
+        if (!donor) {
+          console.error("No donor data provided to displayDonorDetails");
+          return;
+        }
+
+        // Ensure required functions are available
+        if (typeof calculateAge !== "function") {
+          console.error("calculateAge function not available");
+          return;
+        }
+
+        // Basic Info Tab
+        document.getElementById("donorBasicInfo").innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-section">
+                            <h6><i class="fas fa-user"></i> Personal Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Full Name:</strong></td><td>${Utils.escapeHtml(
+                                  donor.full_name
+                                )}</td></tr>
+                                <tr><td><strong>Email:</strong></td><td>${Utils.escapeHtml(
+                                  donor.email || ""
+                                )}</td></tr>
+                                <tr><td><strong>Phone:</strong></td><td>${Utils.escapeHtml(
+                                  donor.phone || ""
+                                )}</td></tr>
+                                <tr><td><strong>Date of Birth:</strong></td><td>${Utils.formatDate(
+                                  donor.date_of_birth
+                                )} (Age: ${calculateAge(
+          donor.date_of_birth
+        )})</td></tr>
+                                <tr><td><strong>Gender:</strong></td><td>${Utils.escapeHtml(
+                                  donor.gender || ""
+                                )}</td></tr>
+                                <tr><td><strong>Blood Type:</strong></td><td><span class="blood-type-badge">${
+                                  donor.blood_type
+                                }</span></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-section">
+                            <h6><i class="fas fa-map-marker-alt"></i> Contact Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Address:</strong></td><td>${Utils.escapeHtml(
+                                  donor.address || ""
+                                )}</td></tr>
+                                <tr><td><strong>City:</strong></td><td>${Utils.escapeHtml(
+                                  donor.city || ""
+                                )}</td></tr>
+                                <tr><td><strong>State:</strong></td><td>${Utils.escapeHtml(
+                                  donor.state || ""
+                                )}</td></tr>
+                                <tr><td><strong>Postal Code:</strong></td><td>${Utils.escapeHtml(
+                                  donor.postal_code || ""
+                                )}</td></tr>
+                                <tr><td><strong>Emergency Contact:</strong></td><td>${Utils.escapeHtml(
+                                  donor.emergency_contact || ""
+                                )}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h6><i class="fas fa-info-circle"></i> Registration Information</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Registration Date:</strong></td>
+                            <td>${Utils.formatDate(donor.created_at)}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Eligibility Status:</strong></td>
+                          <td>${getEligibilityTextForDonor(donor)}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Last Updated:</strong></td>
+                            <td>${Utils.formatDate(donor.updated_at)}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+
+        document.getElementById("donorHistory").innerHTML =
+          renderDonationHistory(donor.donation_history || [], donor.id);
+
+        document.getElementById("donorMedical").innerHTML =
+          renderMedicalInfo(donor);
+      }
+
+      function renderDonationHistory(history, donorId) {
+        if (!Array.isArray(history) || history.length === 0) {
+          return `
+                <div class="text-center text-muted">
+                    <i class="fas fa-history"></i> No donation history available.
+                </div>
+            `;
+        }
+
+        const filteredHistory = history.filter((item) => {
+          if (item.donor_id === undefined || item.donor_id === null) {
+            return true;
+          }
+          return String(item.donor_id) === String(donorId);
+        });
+
+        if (filteredHistory.length === 0) {
+          return `
+                <div class="text-center text-muted">
+                    <i class="fas fa-history"></i> No donation history available.
+                </div>
+            `;
+        }
+
+        return filteredHistory
+          .map((item) => {
+            const status = item.status ? item.status.toLowerCase() : "unknown";
+            const statusLabel = status.replace(/_/g, " ");
+            const hospitalName = item.hospital_name
+              ? Utils.escapeHtml(item.hospital_name)
+              : "Unknown Hospital";
+
+            return `
+                <div class="donation-history-item">
+                    <div class="donation-date">
+                        ${Utils.formatDate(item.donation_date)}
+                    </div>
+                    <div class="text-muted">
+                        ${Utils.escapeHtml(item.blood_type || "N/A")} • ${Utils.escapeHtml(
+              item.units_donated ? `${item.units_donated} units` : "Units N/A"
+            )}
+                    </div>
+                    <div class="text-muted">
+                        ${hospitalName}
+                    </div>
+                    <div class="text-muted">
+                        Status: ${Utils.escapeHtml(statusLabel)}
+                    </div>
+                </div>
+              `;
+          })
+          .join("");
+      }
+
+          function renderMedicalInfo(donor) {
+          const conditions = Array.isArray(donor.medical_conditions)
+            ? donor.medical_conditions
+            : [];
+          const hasConditions = conditions.length > 0;
+          const conditionsMarkup = hasConditions
+            ? `<ul class="mb-2">${conditions
+              .map((condition) => `<li>${Utils.escapeHtml(condition)}</li>`)
+              .join("")}</ul>`
+            : `<div class="text-muted">No reported medical conditions.</div>`;
+
+          return `
+            <div class="detail-section">
+              <h6><i class="fas fa-notes-medical"></i> Medical Overview</h6>
+              <table class="table table-sm">
+                <tr>
+                  <td><strong>Blood Type:</strong></td>
+                  <td>${Utils.escapeHtml(donor.blood_type || "N/A")}</td>
+                </tr>
+                <tr>
+                  <td><strong>Weight:</strong></td>
+                  <td>${Utils.escapeHtml(donor.weight || "Not provided")}</td>
+                </tr>
+                <tr>
+                  <td><strong>Last Donation:</strong></td>
+                  <td>${donor.last_donation_date ? Utils.formatDate(donor.last_donation_date) : "Never"}</td>
+                </tr>
+                <tr>
+                  <td><strong>Eligibility:</strong></td>
+                  <td>${getEligibilityTextForDonor(donor)}</td>
+                </tr>
+              </table>
+            </div>
+            <div class="detail-section">
+              <h6><i class="fas fa-heartbeat"></i> Medical Conditions</h6>
+              ${conditionsMarkup}
+            </div>
+            `;
+          }
+
+      function switchTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        document.querySelectorAll(".tab-button").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Show selected tab
+        document.getElementById(`tab-${tabName}`).classList.add("active");
+        event.target.classList.add("active");
+      }
+
+      function showAddDonorModal() {
+        // Reset form and step
+        document.getElementById("addDonorForm").reset();
+        currentStep = 1;
+        showStep(1);
+
+        // Use Bootstrap 5 modal API without jQuery
+        const modal = new bootstrap.Modal(
+          document.getElementById("addDonorModal")
+        );
+        modal.show();
+      }
+
+      function nextStep() {
+        if (validateCurrentStep()) {
+          if (currentStep < 3) {
+            currentStep++;
+            showStep(currentStep);
+          }
+        }
+      }
+
+      function prevStep() {
+        if (currentStep > 1) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      }
+
+      function showStep(step) {
+        // Hide all steps
+        document.querySelectorAll(".form-step").forEach((stepEl) => {
+          stepEl.classList.remove("active");
+        });
+
+        // Show current step
+        document
+          .querySelector(`.form-step[data-step="${step}"]`)
+          .classList.add("active");
+
+        // Update step indicators
+        document
+          .querySelectorAll(".step-indicator")
+          .forEach((indicator, index) => {
+            indicator.classList.remove("active", "completed");
+            if (index + 1 < step) {
+              indicator.classList.add("completed");
+            } else if (index + 1 === step) {
+              indicator.classList.add("active");
+            }
+          });
+
+        // Update buttons
+        const prevBtn = document.getElementById("prevStepBtn");
+        const nextBtn = document.getElementById("nextStepBtn");
+        const submitBtn = document.getElementById("submitDonorBtn");
+
+        prevBtn.style.display = step > 1 ? "inline-block" : "none";
+        nextBtn.style.display = step < 3 ? "inline-block" : "none";
+        submitBtn.style.display = step === 3 ? "inline-block" : "none";
+      }
+
+      function validateCurrentStep() {
+        const currentStepEl = document.querySelector(
+          `.form-step[data-step="${currentStep}"]`
+        );
+        const requiredFields = currentStepEl.querySelectorAll("[required]");
+
+        for (let field of requiredFields) {
+          if (!field.value.trim()) {
+            Notifications.error(
+              "Validation Error",
+              `Please fill in the ${field.previousElementSibling.textContent
+                .replace("*", "")
+                .trim()} field`
+            );
+            field.focus();
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function handleAddDonor(e) {
+        e.preventDefault();
+
+        if (!validateCurrentStep()) {
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append(
+          "full_name",
+          document.getElementById("donorFullName").value
+        );
+        formData.append("email", document.getElementById("donorEmail").value);
+        formData.append("phone", document.getElementById("donorPhone").value);
+        formData.append(
+          "date_of_birth",
+          document.getElementById("donorDob").value
+        );
+        formData.append("gender", document.getElementById("donorGender").value);
+        formData.append(
+          "blood_type",
+          document.getElementById("donorBloodType").value
+        );
+        formData.append(
+          "address",
+          document.getElementById("donorAddress").value
+        );
+        formData.append("city", document.getElementById("donorCity").value);
+        formData.append("state", document.getElementById("donorState").value);
+        formData.append(
+          "postal_code",
+          document.getElementById("donorPostalCode").value
+        );
+        formData.append(
+          "emergency_contact",
+          document.getElementById("emergencyContact").value
+        );
+        formData.append("weight", document.getElementById("donorWeight").value);
+        formData.append(
+          "last_donation",
+          document.getElementById("lastDonation").value
+        );
+        formData.append(
+          "additional_notes",
+          document.getElementById("additionalNotes").value
+        );
+
+        // Medical conditions
+        const conditions = [];
+        document
+          .querySelectorAll('input[type="checkbox"]:checked')
+          .forEach((checkbox) => {
+            conditions.push(checkbox.value);
+          });
+        formData.append("medical_conditions", JSON.stringify(conditions));
+
+        // Debug: Log form data
+        console.log("Form data being submitted:");
+        for (let [key, value] of formData.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+
+        // Show loading
+        const submitBtn = document.getElementById("submitDonorBtn");
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Adding...';
+        submitBtn.disabled = true;
+
+        fetch("../php/add_donor.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            if (result.success) {
+              Notifications.success("Success", "Donor added successfully");
+
+              // Use Bootstrap 5 modal API without jQuery
+              const modalElement = document.getElementById("addDonorModal");
+              const modal = bootstrap.Modal.getInstance(modalElement);
+              if (modal) {
+                // Remove focus from any focused elements inside modal before hiding
+                const focusedElement = modalElement.querySelector(":focus");
+                if (focusedElement) {
+                  focusedElement.blur();
+                }
+                modal.hide();
+              }
+
+              loadDonors(currentPage);
+              loadDonorStats();
+            } else {
+              // Show detailed validation errors if available
+              let errorMessage = result.message;
+              if (result.errors && result.errors.length > 0) {
+                errorMessage += "\n• " + result.errors.join("\n• ");
+              }
+              throw new Error(errorMessage);
+            }
+          })
+          .catch((error) => {
+            console.error("Error adding donor:", error);
+            Notifications.error(
+              "Error",
+              "Failed to add donor: " + error.message
+            );
+          })
+          .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+          });
+      }
+
+      function scheduleDonation(donorId) {
+        const donor = currentDonors.find((item) => item.id === donorId);
+        if (!donor) {
+          Notifications.error("Error", "Unable to find donor details");
+          return;
+        }
+
+        const user =
+          typeof Session !== "undefined" ? Session.getCurrentUser() : null;
+        const hospitalId = user && user.hospital_id ? user.hospital_id : null;
+
+        if (!hospitalId) {
+          Notifications.error("Error", "Hospital session not found");
+          return;
+        }
+
+        if (!donor.blood_type) {
+          Notifications.error("Error", "Donor blood type is missing");
+          return;
+        }
+
+        const today = new Date().toISOString().split("T")[0];
+
+        Swal.fire({
+          title: "Schedule Donation",
+          html: `
+            <div class="text-left">
+              <div class="mb-2"><strong>Donor:</strong> ${Utils.escapeHtml(
+                donor.full_name
+              )}</div>
+              <div class="mb-3"><strong>Blood Type:</strong> ${Utils.escapeHtml(
+                donor.blood_type
+              )}</div>
+              <label class="small mb-1">Date</label>
+              <input id="scheduleDate" type="date" class="swal2-input" min="${today}" value="${today}" />
+              <label class="small mb-1">Time</label>
+              <input id="scheduleTime" type="time" class="swal2-input" />
+              <label class="small mb-1">Notes (optional)</label>
+              <textarea id="scheduleNotes" class="swal2-textarea" placeholder="Add any notes"></textarea>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: "Schedule",
+          cancelButtonText: "Cancel",
+          confirmButtonColor: "#dc3545",
+          focusConfirm: false,
+          preConfirm: () => {
+            const date = document.getElementById("scheduleDate").value;
+            const time = document.getElementById("scheduleTime").value;
+
+            if (!date || !time) {
+              Swal.showValidationMessage("Please select a date and time");
+              return null;
+            }
+
+            return {
+              date,
+              time,
+              notes: document.getElementById("scheduleNotes").value.trim(),
+            };
+          },
+        }).then((result) => {
+          if (!result.isConfirmed || !result.value) {
+            return;
+          }
+
+          const appointmentTime = result.value.time.includes(":")
+            ? `${result.value.time}:00`
+            : `${result.value.time}`;
+
+          API.post("create_appointment.php", {
+            donor_id: donorId,
+            hospital_id: hospitalId,
+            appointment_date: result.value.date,
+            appointment_time: appointmentTime,
+            blood_type: donor.blood_type,
+            notes: result.value.notes,
+          })
+            .then((response) => {
+              if (!response.success) {
+                throw new Error(response.message || "Failed to schedule");
+              }
+
+              Notifications.success(
+                "Scheduled",
+                "Donation appointment scheduled successfully"
+              );
+              loadDonors(currentPage);
+            })
+            .catch((error) => {
+              Notifications.error(
+                "Error",
+                "Failed to schedule donation: " + error.message
+              );
+            });
+        });
+      }
+
+      function contactDonor(phone) {
+        if (navigator.userAgent.includes("Mobile")) {
+          window.location.href = `tel:${phone}`;
+        } else {
+          Notifications.info("Contact Donor", `Donor phone number: ${phone}`);
+        }
+      }
+
+      function exportDonors() {
+        Notifications.info("Export", "Preparing donor data for export...");
+
+        API.get("export_donors.php", currentFilters)
+          .then((response) => {
+            if (response.success) {
+              // Create and download CSV
+              const csv = response.data.csv;
+              const blob = new Blob([csv], { type: "text/csv" });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `donors_export_${
+                new Date().toISOString().split("T")[0]
+              }.csv`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);
+
+              Notifications.success(
+                "Success",
+                "Donor data exported successfully"
+              );
+            } else {
+              throw new Error(response.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error exporting donors:", error);
+            Notifications.error("Error", "Failed to export donor data");
+          });
+      }
+
+      // Modal functions for other features
+
+      function showEmergencyRequestsModal() {
+        window.location.href = "emergency_dashboard.html";
+      }
+
+      function loadEmergencyRequests() {
+        const loading = document.getElementById("emergencyRequestsLoading");
+        const content = document.getElementById("emergencyRequestsContent");
+
+        loading.style.display = "block";
+        content.innerHTML = "";
+
+        API.get("get_emergency_requests.php")
+          .then((response) => {
+            loading.style.display = "none";
+
+            if (response.success) {
+              updateEmergencyStats(response.data);
+              displayEmergencyRequests(response.data);
+              document.getElementById("lastUpdated").textContent =
+                new Date().toLocaleTimeString();
+            } else {
+              content.innerHTML =
+                '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Unable to load emergency requests at this time.</div>';
+            }
+          })
+          .catch((error) => {
+            loading.style.display = "none";
+            console.error("Error loading emergency requests:", error);
+            content.innerHTML =
+              '<div class="alert alert-danger"><i class="fas fa-times-circle"></i> Error loading emergency requests. Please try again.</div>';
+          });
+      }
+
+      function updateEmergencyStats(requests) {
+        const criticalCount = requests.filter(
+          (r) => r.urgency === "critical"
+        ).length;
+        const highCount = requests.filter((r) => r.urgency === "high").length;
+        const otherCount = requests.filter(
+          (r) => r.urgency !== "critical" && r.urgency !== "high"
+        ).length;
+
+        document.getElementById("emergencyRequestsCount").textContent =
+          requests.length;
+        document.getElementById("criticalCount").textContent = criticalCount;
+        document.getElementById("highCount").textContent = highCount;
+        document.getElementById("otherCount").textContent = otherCount;
+      }
+
+      function displayEmergencyRequests(requests) {
+        const content = document.getElementById("emergencyRequestsContent");
+
+        if (requests.length === 0) {
+          content.innerHTML =
+            '<div class="alert alert-info"><i class="fas fa-info-circle"></i> No emergency requests at this time. Great job keeping up with demand!</div>';
+          return;
+        }
+
+        // Sort by urgency priority
+        const urgencyOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+        requests.sort(
+          (a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
+        );
+
+        content.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th><i class="fas fa-user-injured"></i> Patient Details</th>
+                  <th><i class="fas fa-tint"></i> Blood Type</th>
+                  <th><i class="fas fa-vials"></i> Units</th>
+                  <th><i class="fas fa-exclamation-triangle"></i> Urgency</th>
+                  <th><i class="fas fa-clock"></i> Time</th>
+                  <th><i class="fas fa-phone"></i> Contact</th>
+                  <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${requests
+                  .map(
+                    (request) => `
+                  <tr class="emergency-request-row" data-urgency="${
+                    request.urgency
+                  }" data-blood-type="${request.blood_type}">
+                    <td>
+                      <strong>${Utils.escapeHtml(
+                        request.patient_name || "Anonymous"
+                      )}</strong>
+                      <br><small class="text-muted">
+                        <i class="fas fa-hospital"></i> ${Utils.escapeHtml(
+                          request.hospital_name || "Unknown Hospital"
+                        )}
+                      </small>
+                    </td>
+                    <td>
+                      <span class="badge badge-danger badge-lg">${
+                        request.blood_type
+                      }</span>
+                    </td>
+                    <td>
+                      <strong>${request.units_needed}</strong> units
+                    </td>
+                    <td>
+                      <span class="badge badge-${getUrgencyBadgeClass(
+                        request.urgency
+                      )}">
+                        ${getUrgencyIcon(
+                          request.urgency
+                        )} ${request.urgency.toUpperCase()}
+                      </span>
+                    </td>
+                    <td>
+                      <small>${formatRequestTime(
+                        request.created_at || new Date()
+                      )}</small>
+                    </td>
+                    <td>
+                      <div class="contact-info">
+                        <a href="tel:${
+                          request.contact_phone
+                        }" class="btn btn-sm btn-outline-primary">
+                          <i class="fas fa-phone"></i>
+                        </a>
+                        <a href="mailto:${
+                          request.contact_email
+                        }" class="btn btn-sm btn-outline-info ml-1">
+                          <i class="fas fa-envelope"></i>
+                        </a>
+                      </div>
+                      <small class="d-block text-muted">${Utils.escapeHtml(
+                        request.contact_phone || "N/A"
+                      )}</small>
+                    </td>
+                    <td>
+                      <div class="btn-group-vertical btn-group-sm">
+                        <button class="btn btn-success btn-sm" onclick="respondToEmergencyRequest(${
+                          request.id
+                        }, 'available')" title="We have blood available">
+                          <i class="fas fa-check"></i> Available
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="respondToEmergencyRequest(${
+                          request.id
+                        }, 'partial')" title="Partially available">
+                          <i class="fas fa-exclamation"></i> Partial
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="respondToEmergencyRequest(${
+                          request.id
+                        }, 'unavailable')" title="No blood available">
+                          <i class="fas fa-times"></i> Unavailable
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function getUrgencyBadgeClass(urgency) {
+        const classes = {
+          critical: "danger",
+          high: "warning",
+          medium: "info",
+          low: "secondary",
+        };
+        return classes[urgency] || "secondary";
+      }
+
+      function getUrgencyIcon(urgency) {
+        const icons = {
+          critical: '<i class="fas fa-skull-crossbones"></i>',
+          high: '<i class="fas fa-exclamation-triangle"></i>',
+          medium: '<i class="fas fa-exclamation-circle"></i>',
+          low: '<i class="fas fa-info-circle"></i>',
+        };
+        return icons[urgency] || '<i class="fas fa-question-circle"></i>';
+      }
+
+      function formatRequestTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMinutes = Math.floor((now - date) / (1000 * 60));
+
+        if (diffMinutes < 1) return "Just now";
+        if (diffMinutes < 60) return `${diffMinutes}m ago`;
+        if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)}h ago`;
+        return date.toLocaleDateString();
+      }
+
+      function respondToEmergencyRequest(requestId, status) {
+        const statusMessages = {
+          available: "Blood is available for immediate pickup",
+          partial: "Some units available, please contact us",
+          unavailable: "No blood available at this time",
+        };
+
+        Notifications.confirm(
+          "Respond to Emergency Request",
+          `Are you sure you want to respond as: <strong>${status.toUpperCase()}</strong>?<br><small>${
+            statusMessages[status]
+          }</small>`
+        ).then((result) => {
+          if (result.isConfirmed) {
+            API.post("respond_emergency_request.php", {
+              request_id: requestId,
+              status: status,
+              hospital_response: statusMessages[status],
+            })
+              .then((response) => {
+                if (response.success) {
+                  Notifications.success(
+                    "Response Sent",
+                    "Your response has been sent to the requesting hospital."
+                  );
+                  refreshEmergencyRequests();
+                } else {
+                  throw new Error(
+                    response.message || "Failed to send response"
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error("Error responding to request:", error);
+                Notifications.error(
+                  "Error",
+                  "Failed to send response: " + error.message
+                );
+              });
+          }
+        });
+      }
+
+      function refreshEmergencyRequests() {
+        if ($("#emergencyRequestsModal").is(":visible")) {
+          loadEmergencyRequests();
+        }
+      }
+
+      function applyEmergencyFilters() {
+        const urgencyFilter = document.getElementById("urgencyFilter").value;
+        const bloodTypeFilter =
+          document.getElementById("bloodTypeFilter").value;
+        const rows = document.querySelectorAll(".emergency-request-row");
+
+        rows.forEach((row) => {
+          const urgency = row.dataset.urgency;
+          const bloodType = row.dataset.bloodType;
+
+          const urgencyMatch = !urgencyFilter || urgency === urgencyFilter;
+          const bloodTypeMatch =
+            !bloodTypeFilter || bloodType === bloodTypeFilter;
+
+          row.style.display = urgencyMatch && bloodTypeMatch ? "" : "none";
+        });
+      }
+
+      // Auto-refresh every 30 seconds if modal is open
+      setInterval(() => {
+        if ($("#emergencyRequestsModal").is(":visible")) {
+          refreshEmergencyRequests();
+        }
+      }, 30000);
+
+      function showReportsModal() {
+        // Navigate to dedicated reports dashboard
+        window.location.href = "reports.html";
+      }
+
+      function logout() {
+        Notifications.confirm(
+          "Logout",
+          "Are you sure you want to logout?"
+        ).then((result) => {
+          if (result.isConfirmed) {
+            Session.logout()
+              .then(() => {
+                window.location.href = "../index.html";
+              })
+              .catch(() => {
+                window.location.href = "../index.html";
+              });
+          }
+        });
+      }
+
+      // Add modal event listeners for proper cleanup
+      document.addEventListener("DOMContentLoaded", function () {
+        // Global focus management for all Bootstrap modals
+        document.addEventListener("hide.bs.modal", function (event) {
+          const modal = event.target;
+          // Remove focus from all focused elements in the hiding modal
+          const focusedElements = modal.querySelectorAll(":focus");
+          focusedElements.forEach((element) => {
+            element.blur();
+          });
+        });
+        const addDonorModal = document.getElementById("addDonorModal");
+
+        // Reset form when modal is fully hidden
+        addDonorModal.addEventListener("hidden.bs.modal", function () {
+          document.getElementById("addDonorForm").reset();
+          currentStep = 1;
+          showStep(1);
+        });
+
+        // Remove focus from any focused elements when modal starts hiding
+        addDonorModal.addEventListener("hide.bs.modal", function () {
+          // Handle all focused elements
+          const focusedElements = this.querySelectorAll(":focus");
+          focusedElements.forEach((element) => {
+            element.blur();
+          });
+
+          // Specifically blur close buttons to prevent accessibility warnings
+          const closeButtons = this.querySelectorAll(
+            ".btn-close, [data-bs-dismiss='modal']"
+          );
+          closeButtons.forEach((button) => {
+            button.blur();
+          });
+        });
+
+        // Add same focus management for donor details modal
+        const donorDetailsModal = document.getElementById("donorDetailsModal");
+
+        // Remove focus from any focused elements when donor details modal starts hiding
+        donorDetailsModal.addEventListener("hide.bs.modal", function () {
+          // Handle all focused elements
+          const focusedElements = this.querySelectorAll(":focus");
+          focusedElements.forEach((element) => {
+            element.blur();
+          });
+
+          // Specifically blur close buttons and action buttons to prevent accessibility warnings
+          const closeButtons = this.querySelectorAll(
+            ".btn-close, [data-bs-dismiss='modal'], .btn"
+          );
+          closeButtons.forEach((button) => {
+            button.blur();
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

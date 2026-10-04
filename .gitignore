@@ -1,0 +1,61 @@
+# HopeDrops - Git Ignore File
+# Files and directories to exclude from version control
+
+# Environment Configuration
+.env
+.env.local
+.env.production
+
+# Database Credentials
+config/database.php
+
+# Logs
+logs/
+*.log
+error_log
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Uploads (User uploaded files)
+uploads/
+!uploads/.htaccess
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Build files
+dist/
+build/
+
+# Operating System Files
+Thumbs.db
+desktop.ini
+
+# PHP specific
+*.php~
+.phpunit.result.cache
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Session files
+sessions/
+
+# Cache
+cache/
+*.cache

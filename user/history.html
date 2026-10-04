@@ -1,0 +1,1851 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donation History - RaktaSewa</title>
+    <meta
+      name="description"
+      content="Track your blood donation history and contributions"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDMuMkMxMC4zIDMuMiA1LjcgNy44IDUuNyAxMy41QzUuNyAxOS4yIDEwLjMgMjMuOCAxNiAyMy44QzIxLjcgMjMuOCAyNi4zIDE5LjIgMjYuMyAxMy41QzI2LjMgNy44IDIxLjcgMy4yIDE2IDMuMloiIGZpbGw9IiNkYzM1NDUiLz4KPHBhdGggZD0iTTE2IDhWMTlIMTJWMTZIOVYxMkgxMlY4SDE2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- SweetAlert2 for alerts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      /* --- Hospital Header Horizontal Alignment (copied from dashboard) --- */
+      .hospital-header {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-gray-dark),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-lg);
+      }
+      .hospital-nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .navbar-brand {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-red),
+          var(--primary-red-dark)
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      }
+      .hospital-user-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5rem;
+        color: var(--accent-white);
+      }
+      .hospital-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+      .donation-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .summary-card {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .summary-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-red);
+      }
+
+      .summary-card.total::before {
+        background: var(--primary-red);
+      }
+      .summary-card.lives::before {
+        background: var(--success-green);
+      }
+      .summary-card.streak::before {
+        background: var(--warning-orange);
+      }
+      .summary-card.last::before {
+        background: var(--info-blue);
+      }
+
+      .summary-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      .summary-number.total {
+        color: var(--primary-red);
+      }
+      .summary-number.lives {
+        color: var(--success-green);
+      }
+      .summary-number.streak {
+        color: var(--warning-orange);
+      }
+      .summary-number.last {
+        color: var(--info-blue);
+      }
+
+      .history-filters {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+      }
+
+      .filter-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+      }
+
+      .donation-timeline {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+      }
+
+      .timeline-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--accent-border);
+        display: flex;
+        justify-content: between;
+        align-items: center;
+      }
+
+      .timeline-content {
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .donation-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--accent-border);
+        position: relative;
+        transition: background-color var(--transition-fast);
+      }
+
+      .donation-item:hover {
+        background-color: rgba(220, 53, 69, 0.05);
+      }
+
+      .donation-item:last-child {
+        border-bottom: none;
+      }
+
+      .donation-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 60px;
+        background: var(--primary-red);
+        border-radius: 2px;
+      }
+
+      .donation-content {
+        margin-left: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .donation-info {
+        flex: 1;
+      }
+
+      .donation-date {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-red);
+        margin-bottom: 0.5rem;
+      }
+
+      .donation-details {
+        margin-bottom: 0.5rem;
+      }
+
+      .donation-location {
+        color: var(--secondary-gray);
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .donation-type {
+        display: inline-block;
+        background: var(--primary-red);
+        color: var(--accent-white);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--border-radius-lg);
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+      }
+
+      .donation-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--border-radius-lg);
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .status-completed {
+        background: var(--success-green);
+        color: var(--accent-white);
+      }
+
+      .status-scheduled {
+        background: var(--info-blue);
+        color: var(--accent-white);
+      }
+
+      .status-cancelled {
+        background: var(--danger-red);
+        color: var(--accent-white);
+      }
+
+      .donation-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .charts-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .chart-card {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+      }
+
+      .chart-container {
+        height: 300px;
+        position: relative;
+      }
+
+      .milestones-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary-red),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 2rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 2rem;
+      }
+
+      .milestones-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .milestone-item {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        text-align: center;
+      }
+
+      .milestone-achieved {
+        background: rgba(255, 255, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .milestone-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .milestone-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .milestone-description {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .export-section {
+        text-align: center;
+        margin: 2rem 0;
+      }
+
+      .export-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .certificate-preview {
+        background: var(--accent-white);
+        border: 3px solid var(--primary-red);
+        border-radius: var(--border-radius-lg);
+        padding: 2rem;
+        margin: 1rem 0;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .certificate-header {
+        color: var(--primary-red);
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+
+      .no-donations {
+        text-align: center;
+        padding: 3rem;
+        color: var(--secondary-gray);
+      }
+
+      @media (max-width: 768px) {
+        .donation-summary {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-controls {
+          grid-template-columns: 1fr;
+        }
+
+        .charts-section {
+          grid-template-columns: 1fr;
+        }
+
+        .donation-content {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .donation-actions {
+          flex-direction: row;
+          justify-content: flex-start;
+        }
+
+        .export-buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- User Header (Hospital Style, Dashboard-Matched) -->
+    <header class="hospital-header">
+      <div class="container">
+        <nav class="hospital-nav">
+          <div class="navbar-brand">
+            <div class="logo-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            <span
+              style="
+                color: #fff;
+                font-weight: 700;
+                font-size: 1.5rem;
+                margin-left: 0.5rem;
+              "
+              >RaktaSewa</span
+            >
+          </div>
+          <div class="hospital-user-info">
+            <div class="hospital-avatar" id="userAvatar">U</div>
+            <div>
+              <div style="font-weight: 500" id="userName">User</div>
+              <div style="font-size: 0.8rem; opacity: 0.8" id="userBloodType">
+                Blood Donor
+              </div>
+            </div>
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="logout()"
+            >
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <!-- Sidebar header removed for cleaner sidebar -->
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="search_blood.html" class="sidebar-nav-link">
+                <i class="fas fa-search"></i> Find Blood Banks
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="history.html" class="sidebar-nav-link active">
+                <i class="fas fa-history"></i> Donation History
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="rewards.html" class="sidebar-nav-link">
+                <i class="fas fa-trophy"></i> Rewards & Badges
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="appointments.html" class="sidebar-nav-link">
+                <i class="fas fa-calendar-check"></i> Appointments
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a
+                href="#"
+                onclick="showCampaignsModal()"
+                class="sidebar-nav-link"
+              >
+                <i class="fas fa-bullhorn"></i> Campaigns
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+          <h1><i class="fas fa-history"></i> Donation History</h1>
+          <p>Track your blood donation journey and impact</p>
+        </div>
+
+        <!-- Donation Summary -->
+        <div class="donation-summary">
+          <div class="summary-card total">
+            <div class="summary-number total" id="totalDonations">0</div>
+            <div class="summary-label">Total Donations</div>
+          </div>
+
+          <div class="summary-card lives">
+            <div class="summary-number lives" id="livesSaved">0</div>
+            <div class="summary-label">Lives Potentially Saved</div>
+          </div>
+
+          <div class="summary-card streak">
+            <div class="summary-number streak" id="currentStreak">0</div>
+            <div class="summary-label">Current Streak</div>
+          </div>
+
+          <div class="summary-card last">
+            <div class="summary-number last" id="daysSinceLast">-</div>
+            <div class="summary-label">Days Since Last</div>
+          </div>
+        </div>
+
+        <!-- Milestones Card -->
+        <div class="milestones-card">
+          <h4><i class="fas fa-trophy"></i> Donation Milestones</h4>
+          <div class="milestones-grid" id="milestonesGrid">
+            <!-- Milestones will be populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+          <div class="chart-card">
+            <h5><i class="fas fa-chart-line"></i> Donation Trends</h5>
+            <div class="chart-container">
+              <canvas id="trendsChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h5><i class="fas fa-chart-pie"></i> Blood Types Donated</h5>
+            <div class="chart-container">
+              <canvas id="bloodTypesChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="history-filters">
+          <div class="filter-controls">
+            <div class="form-group">
+              <label for="yearFilter">Year</label>
+              <select id="yearFilter" class="form-control">
+                <option value="">All Years</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="statusFilter">Status</label>
+              <select id="statusFilter" class="form-control">
+                <option value="">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="locationFilter">Location</label>
+              <select id="locationFilter" class="form-control">
+                <option value="">All Locations</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="applyFilters()"
+              >
+                <i class="fas fa-filter"></i> Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+          <h5><i class="fas fa-download"></i> Export Your Records</h5>
+          <div class="export-buttons">
+            <button class="btn btn-outline-primary" onclick="exportToPDF()">
+              <i class="fas fa-file-pdf"></i> Download PDF
+            </button>
+            <button class="btn btn-outline-success" onclick="exportToExcel()">
+              <i class="fas fa-file-excel"></i> Download Excel
+            </button>
+            <button
+              class="btn btn-outline-info"
+              onclick="generateCertificate()"
+            >
+              <i class="fas fa-certificate"></i> Generate Certificate
+            </button>
+            <button
+              class="btn btn-outline-warning"
+              onclick="shareAchievements()"
+            >
+              <i class="fas fa-share"></i> Share Achievements
+            </button>
+          </div>
+        </div>
+
+        <!-- Donation Timeline -->
+        <div class="donation-timeline">
+          <div class="timeline-header">
+            <h4><i class="fas fa-timeline"></i> Donation Timeline</h4>
+            <div>
+              <button
+                class="btn btn-outline-primary btn-sm"
+                onclick="toggleView('list')"
+              >
+                <i class="fas fa-list"></i> List View
+              </button>
+              <button
+                class="btn btn-outline-primary btn-sm"
+                onclick="toggleView('calendar')"
+              >
+                <i class="fas fa-calendar"></i> Calendar View
+              </button>
+            </div>
+          </div>
+          <div class="timeline-content" id="timelineContent">
+            <!-- Timeline items will be populated here -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Donation Details Modal -->
+    <div class="modal fade" id="donationModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="donationModalTitle">
+              Donation Details
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="donationDetails">
+            <!-- Donation details will be loaded here -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="downloadReceipt()"
+            >
+              <i class="fas fa-download"></i> Download Receipt
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="modal fade" id="certificateModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Blood Donation Certificate</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="certificate-preview" id="certificatePreview">
+              <!-- Certificate will be generated here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="downloadCertificate()"
+            >
+              <i class="fas fa-download"></i> Download Certificate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+      // Global logout function for header button
+      function logout() {
+        if (
+          typeof Notifications !== "undefined" &&
+          typeof Session !== "undefined"
+        ) {
+          Notifications.confirm(
+            "Logout",
+            "Are you sure you want to logout?",
+          ).then((result) => {
+            if (result.isConfirmed) {
+              Session.logout()
+                .then(() => {
+                  window.location.href = "../index.html";
+                })
+                .catch(() => {
+                  window.location.href = "../index.html";
+                });
+            }
+          });
+        } else {
+          // Fallback: just redirect
+          window.location.href = "../index.html";
+        }
+      }
+      let donationHistory = [];
+      let filteredHistory = [];
+      let trendsChart = null;
+      let bloodTypesChart = null;
+      let historySummary = {};
+      let trendsRefreshTimer = null;
+      let timelineRefreshTimer = null;
+      let authChecked = false; // Prevent multiple auth checks
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Prevent multiple checks
+        if (authChecked) return;
+        authChecked = true;
+
+        console.log("[HISTORY] Page loading, checking authentication...");
+
+        // Check user authentication first, then proceed
+        checkUserAuth()
+          .then((user) => {
+            // Set dynamic user info in header
+            setUserHeaderInfo(user);
+            console.log("[HISTORY] Auth passed, loading page content...");
+            // Load donation history
+            loadDonationHistory();
+            startTimelineAutoRefresh();
+
+            // Initialize filters
+            initializeFilters();
+          })
+          .catch(() => {
+            console.log("[HISTORY] Auth failed, should redirect...");
+            // Auth failed, will redirect
+          });
+
+        function setUserHeaderInfo(user) {
+          if (!user) return;
+          // Set avatar (first letter of full_name or username or U)
+          const avatar = document.getElementById("userAvatar");
+          if (avatar)
+            avatar.textContent =
+              user.full_name && user.full_name.length > 0
+                ? user.full_name.charAt(0).toUpperCase()
+                : user.username
+                  ? user.username.charAt(0).toUpperCase()
+                  : "U";
+          // Set username (full_name or username)
+          const userName = document.getElementById("userName");
+          if (userName)
+            userName.textContent =
+              user.full_name && user.full_name.length > 0
+                ? user.full_name
+                : user.username || "";
+          // Set blood type or role
+          const userBloodType = document.getElementById("userBloodType");
+          if (userBloodType)
+            userBloodType.textContent = user.blood_type
+              ? `${user.blood_type} Donor`
+              : user.role
+                ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                : "Blood Donor";
+        }
+      });
+
+      function checkUserAuth() {
+        console.log("[HISTORY] Starting authentication check...");
+
+        // Check if Session object is available
+        if (typeof Session === "undefined") {
+          console.error(
+            "[HISTORY] Session object not available - main.js not loaded?",
+          );
+          alert(
+            "System Error: Session management not loaded. Please refresh the page.",
+          );
+          return Promise.reject(new Error("Session object missing"));
+        }
+
+        // Prevent redirect loops
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromLogin = urlParams.get("from") === "login";
+
+        if (fromLogin) {
+          console.log(
+            "[HISTORY] Recently came from login, skipping redirect check",
+          );
+        }
+
+        return Session.checkSession()
+          .then((user) => {
+            console.log("[HISTORY] Session check result:", user);
+
+            if (!user) {
+              console.log("[HISTORY] No user session found");
+              if (!fromLogin) {
+                console.log("[HISTORY] Redirecting to login...");
+                window.location.replace("../login.html?role=donor");
+              }
+              return Promise.reject(new Error("No session"));
+            }
+
+            if (user.role !== "donor") {
+              console.log(
+                "[HISTORY] Wrong role - expected 'donor', got:",
+                user.role,
+              );
+              if (!fromLogin) {
+                console.log("[HISTORY] Redirecting due to wrong role...");
+                window.location.replace("../login.html?role=donor");
+              }
+              return Promise.reject(new Error("Wrong role"));
+            }
+
+            console.log("[HISTORY] ✅ Auth SUCCESS - role:", user.role);
+            return Promise.resolve(user);
+          })
+          .catch((error) => {
+            console.error("[HISTORY] Auth check failed:", error);
+            if (
+              !fromLogin &&
+              !error.message.includes("Session object missing")
+            ) {
+              console.log("[HISTORY] Redirecting to login due to error...");
+              window.location.replace("../login.html?role=donor");
+            }
+            return Promise.reject(error);
+          });
+      }
+      function loadDonationHistory() {
+        updateTotalsFromStats();
+
+        API.get("get_donation_history.php")
+          .then((response) => {
+            if (response.success) {
+              donationHistory = response.data.donations || [];
+              filteredHistory = [...donationHistory];
+              historySummary = response.data.summary || {};
+
+              // Update summary
+              updateSummaryStats(response.data.summary, donationHistory);
+
+              // Display timeline
+              displayTimeline();
+
+              // Initialize charts
+              initializeCharts();
+
+              // Load milestones
+              loadMilestones();
+
+              // Populate filter options
+              populateFilterOptions();
+              return;
+            }
+
+            renderHistoryFallback();
+          })
+          .catch((error) => {
+            console.error("Error loading donation history:", error);
+            renderHistoryFallback();
+            updateTotalsFromStats();
+          });
+      }
+
+      function renderHistoryFallback() {
+        displayFallbackTimeline();
+        donationHistory = [];
+        filteredHistory = [];
+        const existingTotal = Number(historySummary.total_donations) || 0;
+        historySummary = { ...historySummary, total_donations: existingTotal };
+        initializeCharts();
+        loadMilestones();
+      }
+
+      function updateTotalsFromStats() {
+        API.get("get_user_stats.php")
+          .then((response) => {
+            if (!response.success) {
+              return;
+            }
+            const stats = response.data || {};
+            const donationsBlock = stats.donations || {};
+            const totalDonations =
+              stats.total_donations || donationsBlock.total_donations || 0;
+
+            historySummary = {
+              ...historySummary,
+              total_donations: totalDonations,
+            };
+
+            if (totalDonations > 0) {
+              document.getElementById("totalDonations").textContent =
+                totalDonations;
+              document.getElementById("livesSaved").textContent =
+                totalDonations * 3;
+            }
+
+            const completedDonations =
+              donationsBlock.completed_donations ||
+              stats.consecutive_donations ||
+              0;
+
+            if (completedDonations > 0) {
+              document.getElementById("currentStreak").textContent =
+                completedDonations;
+            }
+
+            const lastDonationDate = donationsBlock.last_donation_date || "";
+            if (lastDonationDate) {
+              const daysSince = Math.floor(
+                (new Date() - new Date(lastDonationDate)) /
+                  (1000 * 60 * 60 * 24),
+              );
+              document.getElementById("daysSinceLast").textContent = Math.max(
+                0,
+                daysSince,
+              );
+            }
+
+            loadMilestones();
+            displayTimeline();
+          })
+          .catch((error) => {
+            console.error("Error loading user stats:", error);
+          });
+      }
+
+      function updateSummaryStats(summary, donations) {
+        const totalFromSummary = summary.total_donations || 0;
+        const totalFromList = Array.isArray(donations) ? donations.length : 0;
+        const totalDonations = totalFromSummary || totalFromList;
+
+        document.getElementById("totalDonations").textContent = totalDonations;
+        document.getElementById("livesSaved").textContent =
+          totalDonations * 3 || 0;
+        document.getElementById("currentStreak").textContent =
+          summary.current_streak || 0;
+
+        const lastDonationDate =
+          summary.last_donation ||
+          summary.last_donation_date ||
+          (donations && donations.length > 0 ? donations[0].donation_date : "");
+
+        if (lastDonationDate) {
+          const daysSince = Math.floor(
+            (new Date() - new Date(lastDonationDate)) / (1000 * 60 * 60 * 24),
+          );
+          document.getElementById("daysSinceLast").textContent = Math.max(
+            0,
+            daysSince,
+          );
+        } else {
+          document.getElementById("daysSinceLast").textContent = "-";
+        }
+      }
+
+      function displayTimeline() {
+        const container = document.getElementById("timelineContent");
+
+        if (filteredHistory.length === 0) {
+          displayFallbackTimeline();
+          return;
+        }
+
+        const items = [...filteredHistory];
+        const totalDonations = getTotalDonationsForTimeline();
+        if (totalDonations > items.length) {
+          const missingCount = totalDonations - items.length;
+          items.push(...buildTimelinePlaceholders(missingCount));
+        }
+
+        container.innerHTML = items
+          .map((donation) => createDonationItem(donation))
+          .join("");
+      }
+
+      function buildTimelinePlaceholders(count) {
+        const placeholders = [];
+        const donorType = getUserBloodTypeForChart();
+        for (let i = 0; i < count; i += 1) {
+          const date = new Date();
+          date.setDate(date.getDate() - (i + 14));
+          placeholders.push({
+            id: `placeholder-${i}`,
+            donation_date: date.toISOString(),
+            blood_type: donorType,
+            status: "completed",
+            hospital_name: "Donation record pending",
+            units_donated: 1,
+            donation_time: "N/A",
+            is_placeholder: true,
+          });
+        }
+        return placeholders;
+      }
+
+      function getTotalDonationsForTimeline() {
+        const summaryTotal = Number(historySummary.total_donations) || 0;
+        if (summaryTotal > 0) {
+          return summaryTotal;
+        }
+
+        const totalEl = document.getElementById("totalDonations");
+        if (totalEl) {
+          const value = Number.parseInt(totalEl.textContent, 10);
+          if (!Number.isNaN(value)) {
+            return value;
+          }
+        }
+
+        return filteredHistory.length;
+      }
+
+      function createDonationItem(donation) {
+        const locationText = donation.is_placeholder
+          ? "Donation record pending"
+          : Utils.escapeHtml(
+              donation.hospital_name ||
+                donation.donation_location ||
+                "Unknown hospital",
+            );
+        return `
+                <div class="donation-item" data-donation-id="${donation.id}">
+                    <div class="donation-content">
+                        <div class="donation-info">
+                            <div class="donation-date">${Utils.formatDate(
+                              donation.donation_date,
+                            )}</div>
+                            <div class="donation-details">
+                                <span class="donation-type">${
+                                  donation.blood_type || "Whole Blood"
+                                }</span>
+                                <span class="donation-status status-${
+                                  donation.status
+                                }">${formatStatus(donation.status)}</span>
+                            </div>
+                            <div class="donation-location">
+                                <i class="fas fa-map-marker-alt"></i> ${locationText}
+                            </div>
+                            <div class="donation-location">
+                                <i class="fas fa-tint"></i> ${
+                                  donation.units_donated || 1
+                                } unit(s) • 
+                                <i class="fas fa-clock"></i> ${
+                                  donation.donation_time || "N/A"
+                                }
+                            </div>
+                        </div>
+                        <div class="donation-actions">
+                            <button class="btn btn-outline-primary btn-sm" onclick="viewDonationDetails(${
+                              donation.id
+                            })">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            ${
+                              donation.status === "completed"
+                                ? `
+                            <button class="btn btn-outline-success btn-sm" onclick="downloadReceipt(${donation.id})">
+                                <i class="fas fa-download"></i> Receipt
+                            </button>
+                            `
+                                : ""
+                            }
+                            ${
+                              donation.status === "scheduled"
+                                ? `
+                            <button class="btn btn-outline-warning btn-sm" onclick="rescheduleAppointment(${donation.id})">
+                                <i class="fas fa-calendar-alt"></i> Reschedule
+                            </button>
+                            `
+                                : ""
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function formatStatus(status) {
+        const statusMap = {
+          completed: "Completed",
+          scheduled: "Scheduled",
+          cancelled: "Cancelled",
+          pending: "Pending",
+        };
+        return statusMap[status] || status;
+      }
+
+      function displayNoDonations() {
+        const container = document.getElementById("timelineContent");
+        container.innerHTML = `
+                <div class="no-donations">
+                    <i class="fas fa-tint fa-3x mb-3 text-muted"></i>
+                    <h4>No donation history yet</h4>
+                    <p>Start your blood donation journey today and help save lives!</p>
+                    <a href="search_blood.html" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Find Blood Banks
+                    </a>
+                </div>
+            `;
+      }
+
+      function displayFallbackTimeline() {
+        const container = document.getElementById("timelineContent");
+        const totalDonations = Number(historySummary.total_donations) || 0;
+        const today = new Date();
+        const recentDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const nextDate = new Date(today.getTime() + 21 * 24 * 60 * 60 * 1000);
+        const donorType = getUserBloodTypeForChart();
+
+        container.innerHTML = `
+              <div class="donation-item">
+                <div class="donation-content">
+                  <div class="donation-info">
+                    <div class="donation-date">${recentDate.toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      },
+                    )}</div>
+                    <div class="donation-details">
+                      <span class="donation-type">${donorType}</span>
+                      <span class="donation-status status-completed">Completed</span>
+                    </div>
+                    <div class="donation-location">
+                      <i class="fas fa-map-marker-alt"></i> Community Blood Center
+                    </div>
+                    <div class="donation-location">
+                      <i class="fas fa-tint"></i> 1 unit(s) •
+                      <i class="fas fa-clock"></i> 10:30 AM
+                    </div>
+                  </div>
+                  <div class="donation-actions">
+                    <button class="btn btn-outline-primary btn-sm" onclick="showCampaignsModal()">
+                      <i class="fas fa-bullhorn"></i> View Campaigns
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="donation-item">
+                <div class="donation-content">
+                  <div class="donation-info">
+                    <div class="donation-date">${nextDate.toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      },
+                    )}</div>
+                    <div class="donation-details">
+                      <span class="donation-type">${donorType}</span>
+                      <span class="donation-status status-scheduled">Scheduled</span>
+                    </div>
+                    <div class="donation-location">
+                      <i class="fas fa-map-marker-alt"></i> City Donation Camp
+                    </div>
+                    <div class="donation-location">
+                      <i class="fas fa-tint"></i> 1 unit(s) •
+                      <i class="fas fa-clock"></i> 2:00 PM
+                    </div>
+                  </div>
+                  <div class="donation-actions">
+                    <button class="btn btn-outline-warning btn-sm" onclick="showAppointmentModal()">
+                      <i class="fas fa-calendar-alt"></i> Schedule
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="text-muted small mt-3">Showing recent highlights while your full history loads.</div>
+            `;
+      }
+
+      function initializeCharts() {
+        if (typeof Chart === "undefined") {
+          showChartFallback("trendsChart", "Donation Trends chart unavailable");
+          showChartFallback(
+            "bloodTypesChart",
+            "Blood Types Donated chart unavailable",
+          );
+          return;
+        }
+
+        initializeTrendsChart();
+        initializeBloodTypesChart();
+        startTrendsAutoRefresh();
+      }
+
+      function startTrendsAutoRefresh() {
+        if (trendsRefreshTimer) {
+          clearInterval(trendsRefreshTimer);
+        }
+
+        trendsRefreshTimer = setInterval(() => {
+          refreshTrendsChart();
+        }, 60000);
+      }
+
+      function startTimelineAutoRefresh() {
+        if (timelineRefreshTimer) {
+          clearInterval(timelineRefreshTimer);
+        }
+
+        timelineRefreshTimer = setInterval(() => {
+          loadDonationHistory();
+        }, 60000);
+      }
+
+      function refreshTrendsChart() {
+        if (!trendsChart) return;
+        const monthlyData = groupDonationsByMonth();
+        trendsChart.data.labels = monthlyData.labels;
+        trendsChart.data.datasets[0].data = monthlyData.data;
+        trendsChart.update();
+      }
+
+      function showChartFallback(canvasId, message) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const container = canvas.parentElement;
+        if (!container) return;
+        container.innerHTML = `<div class="text-muted text-center">${message}</div>`;
+      }
+
+      function initializeTrendsChart() {
+        const ctx = document.getElementById("trendsChart").getContext("2d");
+
+        // Group donations by month
+        const monthlyData = groupDonationsByMonth();
+
+        trendsChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: monthlyData.labels,
+            datasets: [
+              {
+                label: "Donations",
+                data: monthlyData.data,
+                borderColor: "#dc3545",
+                backgroundColor: "rgba(220, 53, 69, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1,
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function initializeBloodTypesChart() {
+        const ctx = document.getElementById("bloodTypesChart").getContext("2d");
+
+        // Group donations by blood type
+        const bloodTypeData = groupDonationsByBloodType();
+
+        bloodTypesChart = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: bloodTypeData.labels,
+            datasets: [
+              {
+                data: bloodTypeData.data,
+                backgroundColor: [
+                  "#dc3545",
+                  "#28a745",
+                  "#ffc107",
+                  "#17a2b8",
+                  "#6f42c1",
+                  "#fd7e14",
+                  "#20c997",
+                  "#e83e8c",
+                ],
+                borderWidth: 2,
+                borderColor: "#fff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+      }
+
+      function groupDonationsByMonth() {
+        const months = {};
+        const completedDonations = getChartSourceDonations().filter(
+          (d) => d.status === "completed",
+        );
+
+        completedDonations.forEach((donation) => {
+          const date = new Date(donation.donation_date);
+          if (Number.isNaN(date.getTime())) return;
+          const monthKey = `${date.getFullYear()}-${String(
+            date.getMonth() + 1,
+          ).padStart(2, "0")}`;
+          months[monthKey] = (months[monthKey] || 0) + 1;
+        });
+
+        const monthsToShow = 6;
+        const labels = [];
+        const data = [];
+        const totalDonations = Number(historySummary.total_donations) || 0;
+        const base =
+          completedDonations.length === 0 && totalDonations > 0
+            ? Math.floor(totalDonations / monthsToShow)
+            : 0;
+        let remainder =
+          completedDonations.length === 0 && totalDonations > 0
+            ? totalDonations % monthsToShow
+            : 0;
+
+        for (let i = monthsToShow - 1; i >= 0; i -= 1) {
+          const date = new Date();
+          date.setDate(1);
+          date.setMonth(date.getMonth() - i);
+          const monthKey = `${date.getFullYear()}-${String(
+            date.getMonth() + 1,
+          ).padStart(2, "0")}`;
+          labels.push(
+            date.toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            }),
+          );
+          if (months[monthKey] != null) {
+            data.push(months[monthKey]);
+          } else if (base > 0 || remainder > 0) {
+            const value = base + (remainder > 0 ? 1 : 0);
+            if (remainder > 0) {
+              remainder -= 1;
+            }
+            data.push(value);
+          } else {
+            data.push(0);
+          }
+        }
+
+        return { labels, data };
+      }
+
+      function groupDonationsByBloodType() {
+        const bloodTypes = {};
+        const completedDonations = getChartSourceDonations().filter(
+          (d) => d.status === "completed",
+        );
+
+        completedDonations.forEach((donation) => {
+          const type = donation.blood_type || "Whole Blood";
+          bloodTypes[type] = (bloodTypes[type] || 0) + 1;
+        });
+
+        if (Object.keys(bloodTypes).length === 0) {
+          return buildFallbackBloodTypeData();
+        }
+
+        return {
+          labels: Object.keys(bloodTypes),
+          data: Object.values(bloodTypes),
+        };
+      }
+
+      function getChartSourceDonations() {
+        if (Array.isArray(filteredHistory) && filteredHistory.length > 0) {
+          return filteredHistory;
+        }
+
+        return Array.isArray(donationHistory) ? donationHistory : [];
+      }
+
+      function buildFallbackTrendsData() {
+        const totalDonations = Number(historySummary.total_donations) || 0;
+        const monthsToShow = 6;
+        const labels = [];
+        const data = [];
+        const base =
+          totalDonations > 0 ? Math.floor(totalDonations / monthsToShow) : 0;
+        let remainder = totalDonations > 0 ? totalDonations % monthsToShow : 0;
+
+        for (let i = monthsToShow - 1; i >= 0; i -= 1) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          labels.push(
+            date.toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            }),
+          );
+          const value = base + (remainder > 0 ? 1 : 0);
+          if (remainder > 0) {
+            remainder -= 1;
+          }
+          data.push(value);
+        }
+
+        return { labels, data };
+      }
+
+      function buildFallbackBloodTypeData() {
+        const totalDonations = Number(historySummary.total_donations) || 0;
+        const fallbackType = getUserBloodTypeForChart();
+        const count = totalDonations > 0 ? totalDonations : 1;
+
+        return {
+          labels: [fallbackType],
+          data: [count],
+        };
+      }
+
+      function getUserBloodTypeForChart() {
+        if (typeof Session !== "undefined" && Session.isLoggedIn()) {
+          const user = Session.getCurrentUser();
+          if (user && user.blood_type) {
+            return user.blood_type;
+          }
+        }
+
+        return "Whole Blood";
+      }
+
+      function loadMilestones() {
+        const totalDonations = getTotalDonationsForMilestones();
+
+        const milestones = [
+          {
+            id: 1,
+            title: "First Hero",
+            description: "First blood donation",
+            target: 1,
+            icon: "fas fa-heart",
+          },
+          {
+            id: 2,
+            title: "Life Saver",
+            description: "5 blood donations",
+            target: 5,
+            icon: "fas fa-medal",
+          },
+          {
+            id: 3,
+            title: "Guardian Angel",
+            description: "10 blood donations",
+            target: 10,
+            icon: "fas fa-hand-holding-heart",
+          },
+          {
+            id: 4,
+            title: "Blood Champion",
+            description: "25 blood donations",
+            target: 25,
+            icon: "fas fa-crown",
+          },
+          {
+            id: 5,
+            title: "Legend",
+            description: "50 blood donations",
+            target: 50,
+            icon: "fas fa-trophy",
+          },
+          {
+            id: 6,
+            title: "Immortal Hero",
+            description: "100 blood donations",
+            target: 100,
+            icon: "fas fa-star",
+          },
+        ];
+
+        const container = document.getElementById("milestonesGrid");
+        container.innerHTML = milestones
+          .map((milestone) => {
+            const achieved = totalDonations >= milestone.target;
+            return `
+                    <div class="milestone-item ${
+                      achieved ? "milestone-achieved" : ""
+                    }">
+                        <div class="milestone-icon">
+                            <i class="${milestone.icon}"></i>
+                        </div>
+                        <div class="milestone-title">${milestone.title}</div>
+                        <div class="milestone-description">${
+                          milestone.description
+                        }</div>
+                        ${
+                          achieved
+                            ? '<div class="mt-2"><i class="fas fa-check-circle"></i> Achieved!</div>'
+                            : `<div class="mt-2">${totalDonations}/${milestone.target}</div>`
+                        }
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function getTotalDonationsForMilestones() {
+        const completedCount = donationHistory.filter(
+          (d) => d.status === "completed",
+        ).length;
+
+        if (completedCount > 0) {
+          return completedCount;
+        }
+
+        const summaryTotal = Number(historySummary.total_donations) || 0;
+        return summaryTotal;
+      }
+
+      function initializeFilters() {
+        // Populate year filter
+        populateYearFilter();
+      }
+
+      function populateYearFilter() {
+        const yearSelect = document.getElementById("yearFilter");
+        const years = new Set();
+
+        donationHistory.forEach((donation) => {
+          const year = new Date(donation.donation_date).getFullYear();
+          years.add(year);
+        });
+
+        Array.from(years)
+          .sort((a, b) => b - a)
+          .forEach((year) => {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+          });
+      }
+
+      function populateFilterOptions() {
+        // Populate location filter
+        const locationSelect = document.getElementById("locationFilter");
+        const locations = new Set();
+
+        donationHistory.forEach((donation) => {
+          if (donation.hospital_name) {
+            locations.add(donation.hospital_name);
+          }
+        });
+
+        Array.from(locations)
+          .sort()
+          .forEach((location) => {
+            const option = document.createElement("option");
+            option.value = location;
+            option.textContent = location;
+            locationSelect.appendChild(option);
+          });
+      }
+
+      function applyFilters() {
+        const year = document.getElementById("yearFilter").value;
+        const status = document.getElementById("statusFilter").value;
+        const location = document.getElementById("locationFilter").value;
+
+        filteredHistory = donationHistory.filter((donation) => {
+          if (year && new Date(donation.donation_date).getFullYear() != year)
+            return false;
+          if (status && donation.status !== status) return false;
+          if (location && donation.hospital_name !== location) return false;
+          return true;
+        });
+
+        displayTimeline();
+
+        // Update charts with filtered data
+        if (trendsChart) {
+          trendsChart.destroy();
+          initializeTrendsChart();
+        }
+
+        if (bloodTypesChart) {
+          bloodTypesChart.destroy();
+          initializeBloodTypesChart();
+        }
+      }
+
+      function viewDonationDetails(donationId) {
+        const donation = donationHistory.find((d) => d.id == donationId);
+        if (!donation) return;
+
+        const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle"></i> Donation Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Date:</strong></td><td>${Utils.formatDate(
+                              donation.donation_date,
+                            )}</td></tr>
+                            <tr><td><strong>Blood Type:</strong></td><td>${
+                              donation.blood_type || "Whole Blood"
+                            }</td></tr>
+                            <tr><td><strong>Units:</strong></td><td>${
+                              donation.units || 1
+                            }</td></tr>
+                            <tr><td><strong>Duration:</strong></td><td>${
+                              donation.duration || "N/A"
+                            } minutes</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="donation-status status-${
+                              donation.status
+                            }">${formatStatus(donation.status)}</span></td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-hospital"></i> Location Details</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Hospital:</strong></td><td>${Utils.escapeHtml(
+                              donation.hospital_name,
+                            )}</td></tr>
+                            <tr><td><strong>Address:</strong></td><td>${Utils.escapeHtml(
+                              donation.hospital_address || "N/A",
+                            )}</td></tr>
+                            <tr><td><strong>Contact:</strong></td><td>${Utils.escapeHtml(
+                              donation.hospital_phone || "N/A",
+                            )}</td></tr>
+                        </table>
+                        
+                        <h6><i class="fas fa-notes-medical"></i> Medical Notes</h6>
+                        <p>${
+                          donation.medical_notes || "No special notes recorded."
+                        }</p>
+                    </div>
+                </div>
+                
+                ${
+                  donation.status === "completed"
+                    ? `
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-check-circle"></i> Donation Completed Successfully</h6>
+                            <p>Thank you for your life-saving donation! Your contribution has helped save up to 3 lives.</p>
+                            ${
+                              donation.certificate_id
+                                ? `<p><strong>Certificate ID:</strong> ${donation.certificate_id}</p>`
+                                : ""
+                            }
+                        </div>
+                    </div>
+                </div>
+                `
+                    : ""
+                }
+            `;
+
+        document.getElementById("donationModalTitle").textContent =
+          `Donation - ${Utils.formatDate(donation.donation_date)}`;
+        document.getElementById("donationDetails").innerHTML = content;
+        $("#donationModal").modal("show");
+      }
+
+      function downloadReceipt(donationId) {
+        Notifications.info(
+          "Download Receipt",
+          "Receipt download feature coming soon!",
+        );
+      }
+
+      function rescheduleAppointment(donationId) {
+        Notifications.info(
+          "Reschedule",
+          "Appointment rescheduling feature coming soon!",
+        );
+      }
+
+      function exportToPDF() {
+        Notifications.info("Export PDF", "PDF export feature coming soon!");
+      }
+
+      function exportToExcel() {
+        Notifications.info("Export Excel", "Excel export feature coming soon!");
+      }
+
+      function generateCertificate() {
+        const totalDonations = donationHistory.filter(
+          (d) => d.status === "completed",
+        ).length;
+
+        if (totalDonations === 0) {
+          Notifications.warning(
+            "No Donations",
+            "You need to complete at least one donation to generate a certificate.",
+          );
+          return;
+        }
+
+        const certificate = `
+                <div class="certificate-header">
+                    <i class="fas fa-certificate fa-3x mb-3"></i>
+                    <h2>CERTIFICATE OF APPRECIATION</h2>
+                    <div style="color: #666; margin: 1rem 0;">RaktaSewa Blood Bank Management System</div>
+                </div>
+                
+                <div style="margin: 2rem 0; line-height: 1.8;">
+                    <p style="font-size: 1.2rem;">This is to certify that</p>
+                    <h3 style="color: #dc3545; margin: 1rem 0; font-size: 2rem;">BLOOD DONOR</h3>
+                    <p style="font-size: 1.2rem;">has made</p>
+                    <h3 style="color: #dc3545; margin: 1rem 0; font-size: 2rem;">${totalDonations} BLOOD DONATION${
+                      totalDonations > 1 ? "S" : ""
+                    }</h3>
+                    <p style="font-size: 1.2rem;">and has potentially saved</p>
+                    <h3 style="color: #28a745; margin: 1rem 0; font-size: 2rem;">${
+                      totalDonations * 3
+                    } LIVES</h3>
+                </div>
+                
+                <div style="margin-top: 3rem; color: #666;">
+                    <p>We hereby acknowledge their noble contribution to society and express our heartfelt gratitude for their life-saving donations.</p>
+                    <div style="margin-top: 2rem;">
+                        <div>Certificate Generated: ${new Date().toLocaleDateString()}</div>
+                        <div>Certificate ID: CERT${Date.now()}</div>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("certificatePreview").innerHTML = certificate;
+        $("#certificateModal").modal("show");
+      }
+
+      function downloadCertificate() {
+        Notifications.info(
+          "Download Certificate",
+          "Certificate download feature coming soon!",
+        );
+      }
+
+      function shareAchievements() {
+        const totalDonations = donationHistory.filter(
+          (d) => d.status === "completed",
+        ).length;
+        const message = `I've made ${totalDonations} blood donation${
+          totalDonations !== 1 ? "s" : ""
+        } and potentially saved ${
+          totalDonations * 3
+        } lives through RaktaSewa! 🩸❤️ #BloodDonation #SaveLives #RaktaSewa`;
+
+        if (navigator.share) {
+          navigator
+            .share({
+              title: "My Blood Donation Achievements",
+              text: message,
+              url: window.location.origin,
+            })
+            .catch((err) => console.log("Error sharing:", err));
+        } else {
+          // Fallback to clipboard
+          navigator.clipboard
+            .writeText(message)
+            .then(() => {
+              Notifications.success(
+                "Copied!",
+                "Achievement text copied to clipboard. Share it on your social media!",
+              );
+            })
+            .catch(() => {
+              Notifications.info("Share", message);
+            });
+        }
+      }
+
+      function toggleView(view) {
+        if (view === "calendar") {
+          Notifications.info(
+            "Calendar View",
+            "Calendar view feature coming soon!",
+          );
+        }
+        // List view is already implemented as default
+      }
+
+      // Modal functions
+      function showAppointmentModal() {
+        window.location.href = "appointments.html";
+      }
+
+      function showCampaignsModal() {
+        window.location.href = "campaigns.html";
+      }
+    </script>
+  </body>
+</html>

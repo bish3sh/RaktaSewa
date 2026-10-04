@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blood Donation Campaigns - RaktaSewa</title>
+    <meta
+      name="description"
+      content="Join active blood donation campaigns and save lives"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDMuMkMxMC4zIDMuMiA1LjcgNy44IDUuNyAxMy41QzUuNyAxOS4yIDEwLjMgMjMuOCAxNiAyMy44QzIxLjcgMjMuOCAyNi4zIDE5LjIgMjYuMyAxMy41QzI2LjMgNy44IDIxLjcgMy4yIDE2IDMuMloiIGZpbGw9IiNkYzM1NDUiLz4KPHBhdGggZD0iTTE2IDhWMTlIMTJWMTZIOVYxMkgxMlY4SDE2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- SweetAlert2 for alerts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <style>
+      /* --- Hospital Header Horizontal Alignment (copied from dashboard) --- */
+      .hospital-header {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-gray-dark),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-lg);
+      }
+      .hospital-nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .navbar-brand {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-red),
+          var(--primary-red-dark)
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      }
+      .hospital-user-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5rem;
+        color: var(--accent-white);
+      }
+      .hospital-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      .campaigns-header {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: var(--accent-white);
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-md);
+      }
+
+      .campaign-card {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        transition: transform var(--transition-fast);
+        border-left: 4px solid var(--primary-red);
+      }
+
+      .campaign-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .campaign-card.urgent {
+        border-left-color: var(--danger-red);
+      }
+
+      .campaign-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--border-radius-md);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .campaign-status.active {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .campaign-status.urgent {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .campaign-status.completed {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .progress {
+        height: 25px;
+        border-radius: var(--border-radius-md);
+      }
+
+      .progress-bar {
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .filter-tabs {
+        background: var(--accent-white);
+        padding: 1rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+      }
+
+      .filter-btn {
+        padding: 0.5rem 1.5rem;
+        border: 2px solid transparent;
+        background: transparent;
+        border-radius: var(--border-radius-md);
+        margin-right: 0.5rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .filter-btn:hover {
+        background: rgba(220, 53, 69, 0.1);
+      }
+
+      .filter-btn.active {
+        background: var(--primary-red);
+        color: var(--accent-white);
+      }
+
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--secondary-gray);
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- User Header (Hospital Style, Horizontal, Dashboard-Matched) -->
+    <header class="hospital-header">
+      <div class="container">
+        <nav class="hospital-nav">
+          <div class="navbar-brand">
+            <div class="logo-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            <span
+              style="
+                color: #fff;
+                font-weight: 700;
+                font-size: 1.5rem;
+                margin-left: 0.5rem;
+              "
+              >RaktaSewa</span
+            >
+          </div>
+          <div class="hospital-user-info">
+            <div class="hospital-avatar" id="userAvatar">U</div>
+            <div>
+              <div style="font-weight: 500" id="userName">User</div>
+              <div style="font-size: 0.8rem; opacity: 0.8" id="userBloodType">
+                Blood Donor
+              </div>
+            </div>
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="logout()"
+            >
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <div class="dashboard">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="search_blood.html" class="sidebar-nav-link">
+                <i class="fas fa-search"></i> Find Blood Banks
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="history.html" class="sidebar-nav-link">
+                <i class="fas fa-history"></i> Donation History
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="rewards.html" class="sidebar-nav-link">
+                <i class="fas fa-trophy"></i> Rewards & Badges
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="appointments.html" class="sidebar-nav-link">
+                <i class="fas fa-calendar-check"></i> Appointments
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="campaigns.html" class="sidebar-nav-link active">
+                <i class="fas fa-bullhorn"></i> Campaigns
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="campaigns-header">
+          <div class="container-fluid">
+            <h2>
+              <i class="fas fa-bullhorn mr-2"></i> Blood Donation Campaigns
+            </h2>
+            <p class="mb-0">
+              Join active campaigns and help save lives in your community
+            </p>
+          </div>
+        </div>
+
+        <div class="container-fluid">
+          <!-- Filter Tabs -->
+          <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterCampaigns('all')">
+              <i class="fas fa-list"></i> All Campaigns
+            </button>
+            <button class="filter-btn" onclick="filterCampaigns('active')">
+              <i class="fas fa-fire"></i> Active
+            </button>
+            <button class="filter-btn" onclick="filterCampaigns('urgent')">
+              <i class="fas fa-exclamation-triangle"></i> Urgent
+            </button>
+            <button class="filter-btn" onclick="filterCampaigns('registered')">
+              <i class="fas fa-check-circle"></i> My Campaigns
+            </button>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border text-danger" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Campaigns List -->
+          <div id="campaignsContainer" style="display: none"></div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="emptyState" style="display: none">
+            <i class="fas fa-bullhorn"></i>
+            <h4>No Campaigns Found</h4>
+            <p>There are no active blood donation campaigns at the moment.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+      let allCampaigns = [];
+      let registeredCampaigns = [];
+      let currentFilter = "all";
+
+      document.addEventListener("DOMContentLoaded", function () {
+        checkAuth();
+        loadUserInfo();
+        loadCampaigns();
+      });
+
+      function loadUserInfo() {
+        if (typeof Session !== "undefined" && Session.isLoggedIn()) {
+          const user = Session.getCurrentUser();
+          if (user) {
+            document.getElementById("userName").textContent =
+              user.full_name || "User";
+            document.getElementById("userBloodType").textContent =
+              user.blood_type || "Blood Donor";
+            const initial = user.full_name
+              ? user.full_name.charAt(0).toUpperCase()
+              : "U";
+            document.getElementById("userAvatar").textContent = initial;
+          }
+        }
+      }
+
+      function checkAuth() {
+        if (typeof Session === "undefined") {
+          console.error("Session object not found");
+          window.location.href = "../login.html?role=donor";
+          return;
+        }
+
+        Session.checkSession()
+          .then((user) => {
+            if (!user || user.role !== "donor") {
+              window.location.href = "../login.html?role=donor";
+            }
+          })
+          .catch((error) => {
+            console.error("Auth check failed:", error);
+            window.location.href = "../login.html?role=donor";
+          });
+      }
+
+      function loadCampaigns() {
+        document.getElementById("loadingSpinner").style.display = "flex";
+        document.getElementById("campaignsContainer").style.display = "none";
+        document.getElementById("emptyState").style.display = "none";
+
+        API.get("get_campaigns.php")
+          .then((response) => {
+            if (response.success && response.data) {
+              allCampaigns = response.data || [];
+
+              // Load registered campaigns (fixed)
+              return API.get("../php/get_registered_campaigns.php")
+                .then((regResponse) => {
+                  if (regResponse.success && regResponse.data) {
+                    registeredCampaigns = mergeRegisteredCampaigns(
+                      regResponse.data.map((id) => id),
+                    );
+                  } else {
+                    registeredCampaigns = mergeRegisteredCampaigns([]);
+                  }
+                  displayCampaigns();
+                })
+                .catch(() => {
+                  // Continue even if registered campaigns fail
+                  registeredCampaigns = mergeRegisteredCampaigns([]);
+                  displayCampaigns();
+                });
+            } else {
+              throw new Error(response.message || "Failed to load campaigns");
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to load campaigns:", error);
+            Notifications.error("Error", error.message);
+            showEmptyState();
+          })
+          .finally(() => {
+            document.getElementById("loadingSpinner").style.display = "none";
+          });
+      }
+
+      function filterCampaigns(filter) {
+        currentFilter = filter;
+
+        // Update active button
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        displayCampaigns();
+      }
+
+      function displayCampaigns() {
+        let filtered = allCampaigns;
+
+        if (currentFilter === "active") {
+          filtered = allCampaigns.filter((camp) => camp.status === "active");
+        } else if (currentFilter === "urgent") {
+          filtered = allCampaigns.filter(
+            (camp) => camp.days_remaining <= 5 && camp.progress_percentage < 50,
+          );
+        } else if (currentFilter === "registered") {
+          filtered = allCampaigns.filter((camp) =>
+            registeredCampaigns.includes(camp.id),
+          );
+        }
+
+        if (filtered.length === 0) {
+          showEmptyState();
+          return;
+        }
+
+        const container = document.getElementById("campaignsContainer");
+        container.style.display = "block";
+        document.getElementById("emptyState").style.display = "none";
+
+        container.innerHTML = filtered
+          .map((campaign) => {
+            const isUrgent =
+              campaign.days_remaining <= 5 && campaign.progress_percentage < 50;
+            const targetDonors = Number(campaign.target_donors) || 0;
+            const baseCurrent = Number(campaign.current_donors) || 0;
+            const isRegistered = registeredCampaigns
+              .map((id) => String(id))
+              .includes(String(campaign.id));
+            const effectiveCurrent = baseCurrent;
+            const progress =
+              targetDonors > 0
+                ? Math.min(100, (effectiveCurrent / targetDonors) * 100)
+                : 0;
+            const isEnded = isCampaignEnded(campaign);
+            const statusText = isEnded
+              ? "COMPLETED"
+              : campaign.status
+                ? campaign.status.toUpperCase()
+                : "ACTIVE";
+
+            return `
+            <div class="campaign-card ${isUrgent ? "urgent" : ""}">
+              <div class="row align-items-center mb-3">
+                <div class="col-md-8">
+                  <h5 class="mb-2">
+                    <i class="fas fa-bullhorn text-danger mr-2"></i>
+                    ${escapeHtml(campaign.title)}
+                  </h5>
+                  <div class="mb-2">
+                    <span class="campaign-status ${isEnded ? "completed" : campaign.status}">
+                      ${statusText}
+                    </span>
+                    ${
+                      isUrgent
+                        ? '<span class="badge badge-danger ml-2"><i class="fas fa-exclamation-triangle"></i> URGENT</span>'
+                        : ""
+                    }
+                    ${
+                      campaign.days_remaining <= 3
+                        ? `<span class="badge badge-warning ml-2">${campaign.days_remaining} days left</span>`
+                        : ""
+                    }
+                  </div>
+                </div>
+                <div class="col-md-4 text-right">
+                  ${
+                    isEnded
+                      ? '<span class="text-muted"><i class="fas fa-flag-checkered"></i> Campaign ended</span>'
+                      : isRegistered
+                        ? '<button class="btn btn-success" disabled><i class="fas fa-check"></i> Registered</button>'
+                        : '<button class="btn btn-primary" onclick="registerForCampaign(' +
+                          campaign.id +
+                          ')"><i class="fas fa-hand-holding-heart"></i> Register</button>'
+                  }
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <p class="mb-1">
+                    <i class="fas fa-hospital text-primary mr-2"></i>
+                    <strong>Organizer:</strong> ${escapeHtml(
+                      campaign.organizer_name || campaign.hospital_name,
+                    )}
+                  </p>
+                  <p class="mb-1">
+                    <i class="fas fa-map-marker-alt text-danger mr-2"></i>
+                    <strong>Location:</strong> ${escapeHtml(
+                      campaign.city || campaign.location || "Not specified",
+                    )}
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1">
+                    <i class="fas fa-calendar text-info mr-2"></i>
+                    <strong>Start:</strong> ${formatDate(campaign.start_date)}
+                  </p>
+                  <p class="mb-1">
+                    <i class="fas fa-calendar-check text-success mr-2"></i>
+                    <strong>End:</strong> ${formatDate(campaign.end_date)}
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between mb-1">
+                  <span><strong>Progress:</strong></span>
+                  <span>${effectiveCurrent} / ${targetDonors} donors</span>
+                </div>
+                <div class="progress">
+                  <div
+                    class="progress-bar ${getProgressColor(progress)}"
+                    role="progressbar"
+                    style="width: ${progress}%"
+                    aria-valuenow="${progress}"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    ${Math.round(progress)}%
+                  </div>
+                </div>
+              </div>
+
+              ${
+                campaign.description
+                  ? `
+              <p class="text-muted mb-0 small">
+                <i class="fas fa-info-circle mr-2"></i>
+                ${escapeHtml(campaign.description)}
+              </p>
+              `
+                  : ""
+              }
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      function isCampaignEnded(campaign) {
+        if (campaign.status === "completed" || campaign.status === "ended") {
+          return true;
+        }
+
+        if (typeof campaign.days_remaining === "number") {
+          return campaign.days_remaining <= 0;
+        }
+
+        if (campaign.end_date) {
+          const endDate = new Date(campaign.end_date);
+          if (!Number.isNaN(endDate.getTime())) {
+            return endDate < new Date();
+          }
+        }
+
+        return false;
+      }
+
+      function showEmptyState() {
+        document.getElementById("campaignsContainer").style.display = "none";
+        document.getElementById("emptyState").style.display = "block";
+      }
+
+      function registerForCampaign(campaignId) {
+        Swal.fire({
+          title: "Register for Campaign?",
+          text: "Would you like to register for this blood donation campaign?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#28a745",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, register me",
+          cancelButtonText: "Cancel",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            API.post("register_campaign.php", { campaign_id: campaignId })
+              .then((response) => {
+                if (response.success) {
+                  Notifications.success(
+                    "Registered!",
+                    "You have successfully registered for this campaign",
+                  );
+                  loadCampaigns();
+                } else if (
+                  response.message &&
+                  response.message.toLowerCase().includes("already registered")
+                ) {
+                  Notifications.info(
+                    "Already Registered",
+                    "You are already registered for this campaign",
+                  );
+                  loadCampaigns();
+                } else {
+                  throw new Error(response.message);
+                }
+              })
+              .catch((error) => {
+                Notifications.error(
+                  "Error",
+                  "Failed to register: " + error.message,
+                );
+              });
+          }
+        });
+      }
+
+      function getProgressColor(progress) {
+        if (progress >= 75) return "bg-success";
+        if (progress >= 50) return "bg-info";
+        if (progress >= 25) return "bg-warning";
+        return "bg-danger";
+      }
+
+      function mergeRegisteredCampaigns(apiCampaigns) {
+        const unique = new Map();
+        apiCampaigns.forEach((id) => {
+          unique.set(String(id), id);
+        });
+        return Array.from(unique.values());
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function showProfileModal() {
+        Notifications.info("Profile", "Profile editing feature coming soon!");
+      }
+
+      function logout() {
+        Session.logout().then(() => {
+          window.location.href = "../login.html";
+        });
+      }
+    </script>
+  </body>
+</html>

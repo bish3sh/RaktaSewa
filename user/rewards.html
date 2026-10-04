@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rewards & Badges - RaktaSewa</title>
+    <meta
+      name="description"
+      content="View your rewards, badges, and redeem points"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDMuMkMxMC4zIDMuMiA1LjcgNy44IDUuNyAxMy41QzUuNyAxOS4yIDEwLjMgMjMuOCAxNiAyMy44QzIxLjcgMjMuOCAyNi4zIDE5LjIgMjYuMyAxMy41QzI2LjMgNy44IDIxLjcgMy4yIDE2IDMuMloiIGZpbGw9IiNkYzM1NDUiLz4KPHBhdGggZD0iTTE2IDhWMTlIMTJWMTZIOVYxMkgxMlY4SDE2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- SweetAlert2 for alerts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <style>
+      .rewards-header {
+        background: linear-gradient(135deg, #ffd700, #ffa500, #ff6b35);
+        color: var(--accent-white);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(255, 165, 0, 0.3);
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .rewards-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        animation: shimmer 3s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      .points-display {
+        font-size: 4rem;
+        font-weight: 900;
+        margin: 1rem 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        animation: pulse 2s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .user-header {
+        background: linear-gradient(
+          135deg,
+          var(--success-green),
+          var(--primary-red)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-md);
+      }
+      .user-nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .user-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+      .badges-grid::-webkit-scrollbar-track {
+        display: none;
+      }
+
+      .badge-card {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        overflow: hidden;
+      }
+
+      .badge-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ffd700, #ffa500, #ff6b35);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .badge-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(255, 165, 0, 0.2);
+        border-color: #ffd700;
+      }
+
+      .badge-card:hover::before {
+        opacity: 1;
+      }
+
+      .badge-card.earned {
+        border: 3px solid #ffd700;
+        background: linear-gradient(145deg, #fff9e6, #ffeed5);
+        animation: earnedGlow 2s ease-in-out infinite;
+      }
+
+      @keyframes earnedGlow {
+        0%,
+        100% {
+          box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        50% {
+          box-shadow: 0 5px 30px rgba(255, 165, 0, 0.5);
+        }
+      }
+
+      .badge-card.locked {
+        opacity: 0.5;
+        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        filter: grayscale(0.8);
+      }
+
+      .badge-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 1rem;
+        position: relative;
+        transition: transform 0.3s;
+      }
+
+      .badge-card:hover .badge-icon {
+        transform: rotate(10deg) scale(1.1);
+      }
+
+      .shop-header {
+        padding: 2rem 1.5rem;
+        background: linear-gradient(135deg, #dc3545, #c82333, #a71d2a);
+        color: var(--accent-white);
+        border-radius: 20px 20px 0 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .shop-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.5;
+      }
+
+      .shop-header h4,
+      .shop-header p {
+        position: relative;
+        z-index: 1;
+      }
+
+      .rewards-shop {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+
+      .shop-items {
+        padding: 2rem 1.5rem;
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+      }
+
+      .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .shop-item {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border: 2px solid #e9ecef;
+        border-radius: 20px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .shop-item::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 215, 0, 0.1),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .shop-item:hover {
+        border-color: #ffd700;
+        box-shadow: 0 10px 30px rgba(220, 53, 69, 0.15);
+        transform: translateY(-5px);
+      }
+
+      .shop-item:hover::after {
+        left: 100%;
+      }
+
+      .shop-item.unavailable {
+        opacity: 0.5;
+        background: #f8f9fa;
+        filter: grayscale(1);
+      }
+
+      .item-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-red), #d32f2f);
+        color: var(--accent-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto 1rem;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        transition: transform 0.3s;
+      }
+
+      .shop-item:hover .item-icon {
+        transform: scale(1.15) rotate(5deg);
+      }
+
+      .item-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .item-description {
+        color: var(--secondary-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .item-cost {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--warning-orange);
+        margin-bottom: 1rem;
+      }
+
+      .achievements-section {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .achievement-item {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+      }
+
+      .achievement-item:hover {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 215, 0, 0.1),
+          rgba(255, 165, 0, 0.05)
+        );
+        transform: translateX(5px);
+        box-shadow: 0 2px 10px rgba(255, 165, 0, 0.1);
+      }
+
+      .achievement-item:last-child {
+        border-bottom: none;
+      }
+
+      .achievement-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-right: 1.25rem;
+        transition: transform 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .achievement-item:hover .achievement-icon {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      .achievement-icon.completed {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: var(--accent-white);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .achievement-icon.locked {
+        background: linear-gradient(145deg, #e9ecef, #dee2e6);
+        color: #6c757d;
+      }
+
+      .achievement-content {
+        flex: 1;
+      }
+
+      .achievement-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .achievement-description {
+        color: var(--secondary-gray);
+        font-size: 0.9rem;
+      }
+
+      .achievement-reward {
+        text-align: right;
+        color: var(--warning-orange);
+        font-weight: bold;
+      }
+
+      .leaderboard-card {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .leaderboard-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        border-color: #ffd700;
+      }
+
+      .leaderboard-header {
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        color: #333;
+        padding: 1.5rem;
+        text-align: center;
+        font-weight: 600;
+        border-bottom: 3px solid #ff6b35;
+      }
+
+      .leaderboard-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+      }
+
+      .leaderboard-list {
+        padding: 1rem;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+
+      .leaderboard-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .leaderboard-item:hover {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 215, 0, 0.15),
+          rgba(255, 165, 0, 0.1)
+        );
+        transform: translateX(5px);
+        border-color: #ffd700;
+        box-shadow: 0 3px 10px rgba(255, 165, 0, 0.2);
+      }
+
+      .leaderboard-item.bg-light {
+        background: linear-gradient(135deg, #ffe5b4, #ffd700);
+        border: 2px solid #ffa500;
+        font-weight: 600;
+      }
+
+      .leaderboard-rank {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s;
+      }
+
+      .leaderboard-item:hover .leaderboard-rank {
+        transform: scale(1.1) rotate(-5deg);
+      }
+
+      .hospital-header {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-gray-dark),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-lg);
+      }
+      .hospital-nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .hospital-user-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5rem;
+        color: var(--accent-white);
+      }
+      .hospital-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      .leaderboard-rank.gold {
+        background: #ffd700;
+        color: #333;
+      }
+
+      .leaderboard-rank.silver {
+        background: #c0c0c0;
+        color: #333;
+      }
+
+      .leaderboard-rank.bronze {
+        background: #cd7f32;
+        color: #fff;
+      }
+
+      .leaderboard-rank.other {
+        background: #e9ecef;
+        color: #6c757d;
+      }
+
+      .leaderboard-info {
+        flex: 1;
+      }
+
+      .leaderboard-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .leaderboard-stats {
+        font-size: 0.9rem;
+        color: var(--secondary-gray);
+      }
+
+      .leaderboard-points {
+        font-weight: bold;
+        color: var(--warning-orange);
+      }
+
+      @media (max-width: 768px) {
+        .badges-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        @media (min-width: 576px) {
+          .badges-grid {
+            grid-template-columns: 1fr 1fr 1fr;
+          }
+        }
+        @media (min-width: 992px) {
+          .badges-grid {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+          }
+        }
+
+        .shop-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .achievement-item {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+
+        .achievement-reward {
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- User Header (Hospital Style) -->
+    <header class="hospital-header">
+      <div class="container">
+        <nav class="hospital-nav">
+          <div class="navbar-brand">
+            <div class="logo-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            <span style="color: #fff">RaktaSewa</span>
+          </div>
+          <div class="hospital-user-info">
+            <div class="hospital-avatar" id="userAvatar">U</div>
+            <div>
+              <div style="font-weight: 500" id="userName"></div>
+              <div
+                style="font-size: 0.8rem; opacity: 0.8"
+                id="userBloodType"
+              ></div>
+            </div>
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="logout()"
+            >
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <div class="dashboard">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="search_blood.html" class="sidebar-nav-link">
+                <i class="fas fa-search"></i> Find Blood Banks
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="history.html" class="sidebar-nav-link">
+                <i class="fas fa-history"></i> Donation History
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="rewards.html" class="sidebar-nav-link active">
+                <i class="fas fa-trophy"></i> Rewards & Badges
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="appointments.html" class="sidebar-nav-link">
+                <i class="fas fa-calendar-check"></i> Appointments
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a
+                href="#"
+                onclick="showCampaignsModal()"
+                class="sidebar-nav-link"
+              >
+                <i class="fas fa-bullhorn"></i> Campaigns
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+          <h1><i class="fas fa-trophy"></i> Rewards & Badges</h1>
+          <p>Earn points, unlock badges, and redeem amazing rewards</p>
+        </div>
+
+        <!-- Rewards Header -->
+        <div class="rewards-header">
+          <h2><i class="fas fa-coins"></i> Your Reward Points</h2>
+          <div class="points-display" id="totalPoints">0</div>
+          <p>
+            Keep donating blood to earn more points and unlock exclusive
+            rewards!
+          </p>
+
+          <div class="level-progress">
+            <h5>
+              <i class="fas fa-level-up-alt"></i> Level
+              <span id="currentLevel">1</span> Donor
+            </h5>
+            <div class="level-bar">
+              <div
+                class="level-progress-fill"
+                id="levelProgressBar"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.9rem;
+                opacity: 0.9;
+              "
+            >
+              <span id="currentLevelPoints">0</span>
+              <span
+                >Next Level: <span id="nextLevelPoints">100</span> points</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Row -->
+        <div class="row mb-4 gx-4 gy-4">
+          <div class="col-lg-8 col-md-12">
+            <!-- Badges Section -->
+            <div class="badges-section">
+              <div
+                style="display: flex; align-items: center; margin-bottom: 1rem"
+              >
+                <h4 style="margin: 0">
+                  <i class="fas fa-medal"></i> Your Badges
+                </h4>
+                <span
+                  style="margin-left: 1rem; color: #f57c00; font-weight: 500"
+                  >Show off your achievements!</span
+                >
+              </div>
+              <div class="badges-grid" id="badgesGrid">
+                <!-- Badges will be populated here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-12">
+            <!-- Leaderboard -->
+            <div class="leaderboard-card">
+              <div class="leaderboard-header">
+                <h5 style="margin: 0">
+                  <i class="fas fa-crown"></i> Top Donors Leaderboard
+                </h5>
+              </div>
+              <div class="leaderboard-list" id="leaderboardList">
+                <!-- Leaderboard will be populated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rewards Shop -->
+        <div class="rewards-shop">
+          <div class="shop-header">
+            <h4><i class="fas fa-store"></i> Rewards Shop</h4>
+            <p>Redeem your points for exclusive rewards and benefits</p>
+          </div>
+          <div class="shop-items">
+            <div class="shop-intro mb-3 text-muted">
+              Exchange points for donor-friendly perks like wellness kits,
+              priority scheduling, and partner discounts. New items rotate
+              monthly based on availability.
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4 mb-2">
+                <div class="p-3 bg-light rounded">
+                  <strong>Popular Rewards</strong>
+                  <div class="small text-muted">
+                    Wellness kit, protein pack, free health check
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-2">
+                <div class="p-3 bg-light rounded">
+                  <strong>Donor Benefits</strong>
+                  <div class="small text-muted">
+                    Priority slots, fast check-in, bonus points days
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-2">
+                <div class="p-3 bg-light rounded">
+                  <strong>Partner Offers</strong>
+                  <div class="small text-muted">
+                    Local pharmacy discounts, fitness passes
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="shop-grid" id="shopGrid">
+              <!-- Shop items will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="achievements-section">
+          <h4><i class="fas fa-trophy"></i> Achievements</h4>
+          <p class="text-muted mb-3">
+            Track milestones like first donation, streaks, and impact goals.
+            Complete achievements to unlock bonus points and special badges.
+          </p>
+          <div id="achievementsList">
+            <!-- Achievements will be populated here -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Redeem Modal -->
+    <div class="modal fade" id="redeemModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="redeemModalTitle">Redeem Reward</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="redeemModalBody">
+            <!-- Redeem details will be loaded here -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmRedeemBtn">
+              <i class="fas fa-check"></i> Confirm Redemption
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badge Details Modal -->
+    <div class="modal fade" id="badgeModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="badgeModalTitle">Badge Details</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="badgeModalBody">
+            <!-- Badge details will be loaded here -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="shareBadge()"
+            >
+              <i class="fas fa-share"></i> Share Badge
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+      // Global logout function for header button
+      function logout() {
+        if (
+          typeof Notifications !== "undefined" &&
+          typeof Session !== "undefined"
+        ) {
+          Notifications.confirm(
+            "Logout",
+            "Are you sure you want to logout?",
+          ).then((result) => {
+            if (result.isConfirmed) {
+              Session.logout()
+                .then(() => {
+                  window.location.href = "../index.html";
+                })
+                .catch(() => {
+                  window.location.href = "../index.html";
+                });
+            }
+          });
+        } else {
+          // Fallback: just redirect
+          window.location.href = "../index.html";
+        }
+      }
+      // Set dynamic user info in header after authentication
+      function setUserHeaderInfo(user) {
+        if (!user) return;
+        // Set avatar (first letter of full_name or username or U)
+        const avatar = document.getElementById("userAvatar");
+        if (avatar)
+          avatar.textContent =
+            user.full_name && user.full_name.length > 0
+              ? user.full_name.charAt(0).toUpperCase()
+              : user.username
+                ? user.username.charAt(0).toUpperCase()
+                : "U";
+        // Set username (full_name or username)
+        const userName = document.getElementById("userName");
+        if (userName)
+          userName.textContent =
+            user.full_name && user.full_name.length > 0
+              ? user.full_name
+              : user.username || "";
+        // Set blood type or role
+        const userBloodType = document.getElementById("userBloodType");
+        if (userBloodType)
+          userBloodType.textContent = user.blood_type
+            ? `${user.blood_type} Donor`
+            : user.role
+              ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+              : "Blood Donor";
+      }
+      let userRewards = null;
+      let shopItems = [];
+      let badges = [];
+      let achievements = [];
+      let authChecked = false; // Prevent multiple auth checks
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Prevent multiple checks
+        if (authChecked) return;
+        authChecked = true;
+
+        console.log("[REWARDS] Page loading, checking authentication...");
+
+        // Check user authentication first, then proceed
+        checkUserAuth()
+          .then(() => {
+            console.log("[REWARDS] Auth passed, loading page content...");
+            // Load rewards data
+            loadRewardsData();
+
+            // Load leaderboard
+            loadLeaderboard();
+          })
+          .catch(() => {
+            console.log("[REWARDS] Auth failed, should redirect...");
+            // Auth failed, will redirect
+          });
+      });
+
+      function checkUserAuth() {
+        console.log("[REWARDS] Starting authentication check...");
+
+        // Check if Session object is available
+        if (typeof Session === "undefined") {
+          console.error(
+            "[REWARDS] Session object not available - main.js not loaded?",
+          );
+          alert(
+            "System Error: Session management not loaded. Please refresh the page.",
+          );
+          return Promise.reject(new Error("Session object missing"));
+        }
+
+        // Prevent redirect loops
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromLogin = urlParams.get("from") === "login";
+
+        if (fromLogin) {
+          console.log(
+            "[REWARDS] Recently came from login, skipping redirect check",
+          );
+        }
+
+        return Session.checkSession()
+          .then((user) => {
+            console.log("[REWARDS] Session check result:", user);
+
+            if (!user) {
+              console.log("[REWARDS] No user session found");
+              if (!fromLogin) {
+                console.log("[REWARDS] Redirecting to login...");
+                window.location.replace("../login.html?role=donor");
+              }
+              return Promise.reject(new Error("No session"));
+            }
+
+            if (user.role !== "donor") {
+              console.log(
+                "[REWARDS] Wrong role - expected 'donor', got:",
+                user.role,
+              );
+              if (!fromLogin) {
+                console.log("[REWARDS] Redirecting due to wrong role...");
+                window.location.replace("../login.html?role=donor");
+              }
+              return Promise.reject(new Error("Wrong role"));
+            }
+
+            setUserHeaderInfo(user);
+            console.log("[REWARDS] ✅ Auth SUCCESS - role:", user.role);
+            return Promise.resolve(user);
+          })
+          .catch((error) => {
+            console.error("[REWARDS] Auth check failed:", error);
+            if (
+              !fromLogin &&
+              !error.message.includes("Session object missing")
+            ) {
+              console.log("[REWARDS] Redirecting to login due to error...");
+              window.location.replace("../login.html?role=donor");
+            }
+            return Promise.reject(error);
+          });
+      }
+      function loadRewardsData() {
+        API.get("get_user_rewards.php")
+          .then((response) => {
+            if (response.success && response.data) {
+              const data = response.data;
+              // Rewards summary
+              userRewards = {
+                total_points: data.user_rewards.total_points,
+                current_level: data.user_rewards.level,
+                level_points: data.user_rewards.current_points,
+                next_level_points: data.user_rewards.points_for_next_level,
+                badges_earned: data.badges.length,
+                donations_count: data.user_rewards.donations_count,
+                progress_to_next_level:
+                  data.user_rewards.progress_to_next_level,
+              };
+              // Badges
+              badges = (data.all_badges || []).map((b) => ({
+                id: b.id,
+                title: b.name,
+                description: b.description,
+                icon: b.icon,
+                requirement: b.requirements || 1,
+                earned: b.is_earned == 1,
+                level: b.category || 1,
+                progress: b.progress || 0,
+              }));
+              // Shop items
+              shopItems = (data.shop_items || []).map((i) => ({
+                id: i.id,
+                title: i.name,
+                description: i.description,
+                icon: i.image_url || "fas fa-gift",
+                cost: i.points_cost,
+                available:
+                  userRewards.total_points >= i.points_cost &&
+                  i.stock_quantity > 0,
+                category: i.category,
+              }));
+              // Achievements
+              achievements = (data.recent_achievements || []).map((a) => ({
+                id: a.title,
+                title: a.title,
+                description: a.description,
+                icon: a.type === "badge" ? "fas fa-medal" : "fas fa-trophy",
+                reward: 0,
+                completed: true,
+              }));
+              // Leaderboard
+              leaderboard = (data.leaderboard || []).map((u, idx) => ({
+                rank: u.rank_position,
+                name: u.full_name || u.username,
+                donations: u.donations_count,
+                points: u.total_points,
+                isCurrentUser: u.username === Session.user?.username,
+              }));
+              updateRewardsDisplay();
+              displayBadges();
+              displayShopItems();
+              displayAchievements();
+              displayLeaderboard(leaderboard);
+            } else {
+              throw new Error(response.message || "No data");
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading rewards data:", error);
+            Swal.fire(
+              "Error",
+              "Could not load rewards data. Please try again later.",
+              "error",
+            );
+          });
+      }
+
+      // Demo data function removed (now using real API)
+
+      function updateRewardsDisplay() {
+        document.getElementById("totalPoints").textContent =
+          userRewards.total_points;
+        document.getElementById("currentLevel").textContent =
+          userRewards.current_level;
+        document.getElementById("currentLevelPoints").textContent =
+          userRewards.level_points;
+        document.getElementById("nextLevelPoints").textContent =
+          userRewards.next_level_points;
+
+        // Update progress bar
+        const progress =
+          (userRewards.level_points / userRewards.next_level_points) * 100;
+        document.getElementById("levelProgressBar").style.width =
+          progress + "%";
+      }
+
+      // loadBadges removed (now handled in loadRewardsData)
+
+      function displayBadges() {
+        const container = document.getElementById("badgesGrid");
+
+        container.innerHTML = badges
+          .map((badge) => {
+            const progressPercent = badge.earned
+              ? 100
+              : ((badge.progress || 0) / badge.requirement) * 100;
+
+            return `
+                    <div class="badge-card ${
+                      badge.earned ? "earned" : "locked"
+                    }" onclick="showBadgeDetails(${badge.id})">
+                        <div class="badge-icon ${
+                          badge.earned ? "earned" : "locked"
+                        }">
+                            <i class="${badge.icon}"></i>
+                            <div class="badge-level">${badge.level}</div>
+                        </div>
+                        <div class="badge-title">${badge.title}</div>
+                        <div class="badge-description">${
+                          badge.description
+                        }</div>
+                        ${
+                          !badge.earned
+                            ? `
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="badge-progress-text">${
+                          badge.progress || 0
+                        }/${badge.requirement}</div>
+                        `
+                            : '<div class="text-success"><i class="fas fa-check-circle"></i> Earned!</div>'
+                        }
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      // loadShopItems removed (now handled in loadRewardsData)
+
+      function displayShopItems() {
+        const container = document.getElementById("shopGrid");
+
+        container.innerHTML = shopItems
+          .map(
+            (item) => `
+                <div class="shop-item ${
+                  !item.available ? "unavailable" : ""
+                }" ${item.available ? `onclick="redeemItem(${item.id})"` : ""}>
+                    <div class="item-icon">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <div class="item-title">${item.title}</div>
+                    <div class="item-description">${item.description}</div>
+                    <div class="item-cost">
+                        <i class="fas fa-coins"></i> ${item.cost} points
+                    </div>
+                    <button class="btn ${
+                      item.available ? "btn-primary" : "btn-secondary"
+                    }" 
+                            ${!item.available ? "disabled" : ""}>
+                        ${
+                          item.available
+                            ? userRewards.total_points >= item.cost
+                              ? '<i class="fas fa-shopping-cart"></i> Redeem'
+                              : '<i class="fas fa-lock"></i> Insufficient Points'
+                            : '<i class="fas fa-lock"></i> Unavailable'
+                        }
+                    </button>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // loadAchievements removed (now handled in loadRewardsData)
+
+      function displayAchievements() {
+        const container = document.getElementById("achievementsList");
+
+        container.innerHTML = achievements
+          .map(
+            (achievement) => `
+                <div class="achievement-item">
+                    <div class="achievement-icon ${
+                      achievement.completed ? "completed" : "locked"
+                    }">
+                        <i class="${achievement.icon}"></i>
+                    </div>
+                    <div class="achievement-content">
+                        <div class="achievement-title">${
+                          achievement.title
+                        }</div>
+                        <div class="achievement-description">${
+                          achievement.description
+                        }</div>
+                    </div>
+                    <div class="achievement-reward">
+                        ${
+                          achievement.completed
+                            ? '<i class="fas fa-check-circle text-success"></i> Completed'
+                            : `<i class="fas fa-coins"></i> ${achievement.reward} points`
+                        }
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // loadLeaderboard removed (now handled in loadRewardsData)
+
+      function displayLeaderboard(leaderboard) {
+        const container = document.getElementById("leaderboardList");
+
+        container.innerHTML = leaderboard
+          .map((user) => {
+            let rankClass = "other";
+            if (user.rank === 1) rankClass = "gold";
+            else if (user.rank === 2) rankClass = "silver";
+            else if (user.rank === 3) rankClass = "bronze";
+
+            return `
+                    <div class="leaderboard-item ${
+                      user.isCurrentUser ? "bg-light" : ""
+                    }">
+                        <div class="leaderboard-rank ${rankClass}">
+                            ${
+                              user.rank <= 3
+                                ? '<i class="fas fa-trophy"></i>'
+                                : user.rank
+                            }
+                        </div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">${user.name} ${
+                              user.isCurrentUser ? "(You)" : ""
+                            }</div>
+                            <div class="leaderboard-stats">${
+                              user.donations
+                            } donations</div>
+                        </div>
+                        <div class="leaderboard-points">${user.points} pts</div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function redeemItem(itemId) {
+        const item = shopItems.find((i) => i.id === itemId);
+        if (!item) return;
+
+        if (userRewards.total_points < item.cost) {
+          Notifications.warning(
+            "Insufficient Points",
+            `You need ${
+              item.cost - userRewards.total_points
+            } more points to redeem this item.`,
+          );
+          return;
+        }
+
+        document.getElementById("redeemModalTitle").textContent =
+          "Redeem " + item.title;
+        document.getElementById("redeemModalBody").innerHTML = `
+                <div class="text-center mb-3">
+                    <div class="item-icon mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <h5>${item.title}</h5>
+                    <p>${item.description}</p>
+                    <div class="alert alert-info">
+                        <strong>Cost:</strong> ${item.cost} points<br>
+                        <strong>Your Balance:</strong> ${
+                          userRewards.total_points
+                        } points<br>
+                        <strong>Remaining:</strong> ${
+                          userRewards.total_points - item.cost
+                        } points
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("confirmRedeemBtn").onclick = () =>
+          confirmRedemption(itemId);
+        $("#redeemModal").modal("show");
+      }
+
+      function confirmRedemption(itemId) {
+        const item = shopItems.find((i) => i.id === itemId);
+
+        API.post("redeem_reward.php", { item_id: itemId })
+          .then((response) => {
+            if (response.success) {
+              userRewards.total_points -= item.cost;
+              updateRewardsDisplay();
+              displayShopItems();
+
+              $("#redeemModal").modal("hide");
+              Notifications.success(
+                "Redeemed!",
+                `${item.title} has been redeemed successfully. Check your email for details.`,
+              );
+            } else {
+              throw new Error(response.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Redemption error:", error);
+            Notifications.error(
+              "Redemption Failed",
+              "Unable to redeem item: " + error.message,
+            );
+          });
+      }
+
+      function showBadgeDetails(badgeId) {
+        const badge = badges.find((b) => b.id === badgeId);
+        if (!badge) return;
+
+        document.getElementById("badgeModalTitle").textContent = badge.title;
+        document.getElementById("badgeModalBody").innerHTML = `
+                <div class="text-center">
+                    <div class="badge-icon ${
+                      badge.earned ? "earned" : "locked"
+                    } mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+                        <i class="${badge.icon}"></i>
+                        <div class="badge-level" style="width: 35px; height: 35px; font-size: 1rem;">${
+                          badge.level
+                        }</div>
+                    </div>
+                    <h4>${badge.title}</h4>
+                    <p class="text-muted">${badge.description}</p>
+                    
+                    ${
+                      badge.earned
+                        ? `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Badge Earned!
+                        </div>
+                    `
+                        : `
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-warning" style="width: ${
+                              ((badge.progress || 0) / badge.requirement) * 100
+                            }%"></div>
+                        </div>
+                        <p>Progress: ${badge.progress || 0}/${
+                          badge.requirement
+                        }</p>
+                    `
+                    }
+                    
+                    <div class="mt-3">
+                        <small class="text-muted">Level ${
+                          badge.level
+                        } Badge</small>
+                    </div>
+                </div>
+            `;
+
+        $("#badgeModal").modal("show");
+      }
+
+      function shareBadge() {
+        const message =
+          "I just earned a new badge on RaktaSewa for my blood donations! Join me in saving lives. 🏆🩸 #BloodDonation #RaktaSewa";
+
+        if (navigator.share) {
+          navigator
+            .share({
+              title: "Blood Donation Badge",
+              text: message,
+              url: window.location.origin,
+            })
+            .catch((err) => console.log("Error sharing:", err));
+        } else {
+          navigator.clipboard
+            .writeText(message)
+            .then(() => {
+              Notifications.success(
+                "Copied!",
+                "Badge text copied to clipboard. Share it on your social media!",
+              );
+            })
+            .catch(() => {
+              Notifications.info("Share", message);
+            });
+        }
+      }
+
+      // Modal functions
+      function showAppointmentModal() {
+        window.location.href = "appointments.html";
+      }
+
+      function showCampaignsModal() {
+        window.location.href = "campaigns.html";
+      }
+    </script>
+  </body>
+</html>

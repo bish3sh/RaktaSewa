@@ -1,0 +1,1515 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - RaktaSewa</title>
+    <meta
+      name="description"
+      content="RaktaSewa Admin Dashboard - System Management and Oversight"
+    />
+    <!-- Cache busting meta tags -->
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDMuMkMxMC4zIDMuMiA1LjcgNy44IDUuNyAxMy41QzUuNyAxOS4yIDEwLjMgMjMuOCAxNiAyMy44QzIxLjcgMjMuOCAyNi4zIDE5LjIgMjYuMyAxMy41QzI2LjMgNy44IDIxLjcgMy4yIDE2IDMuMloiIGZpbGw9IiNkYzM1NDUiLz4KPHBhdGggZD0iTTE2IDhWMTlIMTJWMTZIOVYxMkgxMlY4SDE2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- SweetAlert2 for alerts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <!-- Early function definition to prevent cache issues -->
+    <script>
+      // Define showAuditLogs function as early as possible
+      function showAuditLogs() {
+        window.location.href = "audit_logs.html";
+      }
+      window.showAuditLogs = showAuditLogs;
+    </script>
+
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      .admin-header {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-gray-dark),
+          var(--primary-red-dark)
+        );
+        color: var(--accent-white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-md);
+      }
+
+      .admin-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .admin-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent-white);
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--accent-white);
+        color: var(--primary-red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card-admin {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        border-left: 4px solid var(--primary-red);
+        transition: transform var(--transition-fast);
+      }
+
+      .stat-card-admin:hover {
+        transform: translateY(-2px);
+      }
+
+      .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .stat-icon.users {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+      .stat-icon.hospitals {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+      .stat-icon.donations {
+        background: #e8f5e8;
+        color: #388e3c;
+      }
+      .stat-icon.requests {
+        background: #fff3e0;
+        color: #f57c00;
+      }
+
+      .chart-container {
+        background: var(--accent-white);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+        position: relative;
+        height: 320px;
+        min-height: 320px;
+        max-height: 320px;
+        overflow: hidden;
+      }
+
+      .chart-container h4 {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        color: var(--secondary-gray-dark);
+      }
+
+      .chart-container canvas {
+        max-height: 250px !important;
+        width: 100% !important;
+        height: 250px !important;
+      }
+
+      .recent-activities {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+        height: 320px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .recent-activities .card-body {
+        flex: 1;
+      }
+
+      .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid var(--accent-border);
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .activity-icon.login {
+        background: #e8f5e8;
+        color: #388e3c;
+      }
+      .activity-icon.register {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+      .activity-icon.donation {
+        background: #ffebee;
+        color: #d32f2f;
+      }
+      .activity-icon.emergency {
+        background: #fff3e0;
+        color: #f57c00;
+      }
+
+      .pending-approvals {
+        background: var(--warning-orange);
+        color: var(--secondary-gray-dark);
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        margin-bottom: 1rem;
+      }
+
+      .system-alerts {
+        background: var(--accent-white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+      }
+
+      .alert-item {
+        padding: 1rem;
+        border-left: 4px solid;
+        margin-bottom: 0.5rem;
+        border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+      }
+
+      .alert-critical {
+        border-color: var(--danger-red);
+        background: #ffebee;
+      }
+      .alert-warning {
+        border-color: var(--warning-orange);
+        background: #fff8e1;
+      }
+      .alert-info {
+        border-color: var(--info-blue);
+        background: #e3f2fd;
+      }
+
+      @media (max-width: 768px) {
+        .quick-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+      <div class="container">
+        <nav class="admin-nav">
+          <div class="navbar-brand">
+            <div class="logo-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            RaktaSewa Admin
+          </div>
+
+          <div class="admin-user-info">
+            <div class="admin-avatar" id="adminAvatar">A</div>
+            <div>
+              <div style="font-weight: 500" id="adminName">Loading...</div>
+              <div style="font-size: 0.8rem; opacity: 0.8" id="adminRole">
+                Admin
+              </div>
+            </div>
+            <button
+              class="btn btn-secondary btn-sm"
+              type="button"
+              onclick="logout()"
+            >
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link active">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="manage_hospitals.html" class="sidebar-nav-link">
+                <i class="fas fa-hospital"></i> Manage Hospitals
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="view_campaigns.html" class="sidebar-nav-link">
+                <i class="fas fa-bullhorn"></i> Campaigns
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="manage_users.html" class="sidebar-nav-link">
+                <i class="fas fa-users"></i> Users Management
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="reports.html" class="sidebar-nav-link">
+                <i class="fas fa-chart-bar"></i> Reports & Analytics
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="settings.html" class="sidebar-nav-link">
+                <i class="fas fa-cogs"></i> System Settings
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="audit_logs.html" class="sidebar-nav-link">
+                <i class="fas fa-clipboard-list"></i> Audit Logs
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- System Alerts -->
+        <div class="system-alerts">
+          <div class="card-header">
+            <h4><i class="fas fa-exclamation-triangle"></i> System Alerts</h4>
+          </div>
+          <div class="card-body">
+            <div id="systemAlerts">
+              <!-- Alerts will be loaded dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Approvals Banner -->
+        <div
+          class="pending-approvals"
+          id="pendingApprovals"
+          style="display: none"
+        >
+          <strong><i class="fas fa-clock"></i> Pending Actions:</strong>
+          <span id="pendingCount">0</span> hospital registrations awaiting
+          approval.
+          <a
+            href="manage_hospitals.html"
+            class="btn btn-sm btn-outline-primary ml-2"
+            >Review Now</a
+          >
+        </div>
+
+        <!-- Quick Statistics -->
+        <div class="quick-stats">
+          <div class="stat-card-admin">
+            <div class="stat-header">
+              <div>
+                <h3 class="stat-number" id="totalUsers">0</h3>
+                <p class="stat-label">Total Users</p>
+              </div>
+              <div class="stat-icon users">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+            <div class="stat-details">
+              <small><span id="newUsersToday">0</span> new today</small>
+            </div>
+          </div>
+
+          <div class="stat-card-admin">
+            <div class="stat-header">
+              <div>
+                <h3 class="stat-number" id="totalHospitals">0</h3>
+                <p class="stat-label">Active Hospitals</p>
+              </div>
+              <div class="stat-icon hospitals">
+                <i class="fas fa-hospital"></i>
+              </div>
+            </div>
+            <div class="stat-details">
+              <small
+                ><span id="pendingHospitals">0</span> pending approval</small
+              >
+            </div>
+          </div>
+
+          <div class="stat-card-admin">
+            <div class="stat-header">
+              <div>
+                <h3 class="stat-number" id="totalDonations">0</h3>
+                <p class="stat-label">Total Donations</p>
+              </div>
+              <div class="stat-icon donations">
+                <i class="fas fa-tint"></i>
+              </div>
+            </div>
+            <div class="stat-details">
+              <small><span id="donationsThisMonth">0</span> this month</small>
+            </div>
+          </div>
+
+          <div class="stat-card-admin">
+            <div class="stat-header">
+              <div>
+                <h3 class="stat-number" id="emergencyRequests">0</h3>
+                <p class="stat-label">Emergency Requests</p>
+              </div>
+              <div class="stat-icon requests">
+                <i class="fas fa-exclamation-circle"></i>
+              </div>
+            </div>
+            <div class="stat-details">
+              <small><span id="criticalRequests">0</span> critical</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+          <div class="col-md-8">
+            <div class="chart-container">
+              <h4>
+                <i class="fas fa-chart-line"></i> Donation Trends (Last 7 Days)
+              </h4>
+              <div style="position: relative; height: 250px; width: 100%">
+                <canvas id="donationChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="chart-container">
+              <h4><i class="fas fa-chart-pie"></i> Blood Type Distribution</h4>
+              <div style="position: relative; height: 250px; width: 100%">
+                <canvas id="bloodTypeChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row align-items-stretch">
+          <div class="col-md-6">
+            <div class="chart-container">
+              <h4>
+                <i class="fas fa-map-marker-alt"></i> Geographic Distribution
+              </h4>
+              <canvas id="geographicChart" width="400" height="300"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="recent-activities">
+              <div class="card-header">
+                <h4><i class="fas fa-clock"></i> Recent Activities</h4>
+              </div>
+              <div
+                class="card-body"
+                style="max-height: 400px; overflow-y: auto"
+              >
+                <div id="recentActivities">
+                  <!-- Activities will be loaded dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blood Inventory Overview -->
+        <div class="chart-container">
+          <h4><i class="fas fa-warehouse"></i> Blood Inventory Overview</h4>
+          <div class="blood-type-grid" id="bloodInventoryOverview">
+            <!-- Blood type cards will be loaded dynamically -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Users Management Modal -->
+    <div class="modal fade" id="usersModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-users"></i> Users Management
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Users Filter Controls -->
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <select id="userRoleFilter" class="form-control">
+                  <option value="">All Roles</option>
+                  <option value="donor">Donors</option>
+                  <option value="hospital">Hospitals</option>
+                  <option value="admin">Admins</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="userStatusFilter" class="form-control">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="verified">Verified</option>
+                  <option value="unverified">Unverified</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  id="userSearchInput"
+                  class="form-control"
+                  placeholder="Search users..."
+                />
+              </div>
+              <div class="col-md-2">
+                <button
+                  class="btn btn-primary btn-block"
+                  onclick="searchUsers()"
+                >
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center">
+                      <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                      Loading users...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Users Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div>
+                <span id="usersCount">Total: 0 users</span>
+              </div>
+              <div id="usersPagination">
+                <!-- Pagination will be generated here -->
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              onclick="exportUsers()"
+            >
+              <i class="fas fa-download"></i> Export Users
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+      let donationChart, bloodTypeChart, geographicChart;
+
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check admin authentication
+        checkAdminAuth();
+
+        // Load dashboard data
+        loadDashboardStats();
+        loadSystemAlerts();
+        loadRecentActivities();
+        loadBloodInventory();
+
+        // Initialize charts
+        initializeCharts();
+
+        // Set up auto-refresh
+        setInterval(loadDashboardStats, 30000); // Refresh every 30 seconds
+      });
+
+      function checkAdminAuth() {
+        Session.checkSession()
+          .then((userData) => {
+            if (!userData || userData.role !== "admin") {
+              Notifications.error("Access Denied", "Admin access required");
+              window.location.href = "../login.html?role=admin";
+              return;
+            }
+
+            // Update admin info
+            document.getElementById("adminName").textContent =
+              userData.full_name;
+            document.getElementById("adminAvatar").textContent =
+              userData.full_name.charAt(0).toUpperCase();
+          })
+          .catch((error) => {
+            console.error("Auth check failed:", error);
+            window.location.href = "../login.html?role=admin";
+          });
+      }
+
+      function loadDashboardStats() {
+        // Show loading state
+        const loadingElements = [
+          "totalUsers",
+          "totalHospitals",
+          "totalDonations",
+          "emergencyRequests",
+        ];
+        loadingElements.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        });
+
+        API.get("get_admin_stats.php")
+          .then((response) => {
+            if (response.success) {
+              const stats = response.data;
+
+              // Update stat cards
+              document.getElementById("totalUsers").textContent =
+                stats.total_users || 0;
+              document.getElementById("newUsersToday").textContent =
+                stats.new_users_today || 0;
+              document.getElementById("totalHospitals").textContent =
+                stats.active_hospitals || 0;
+              document.getElementById("pendingHospitals").textContent =
+                stats.pending_hospitals || 0;
+              document.getElementById("totalDonations").textContent =
+                stats.total_donations || 0;
+              document.getElementById("donationsThisMonth").textContent =
+                stats.donations_this_month || 0;
+              document.getElementById("emergencyRequests").textContent =
+                stats.emergency_requests || 0;
+              document.getElementById("criticalRequests").textContent =
+                stats.critical_requests || 0;
+
+              // Show pending approvals banner
+              const pendingCount = stats.pending_hospitals || 0;
+              const pendingBanner = document.getElementById("pendingApprovals");
+              document.getElementById("pendingCount").textContent =
+                pendingCount;
+
+              if (pendingCount > 0) {
+                pendingBanner.style.display = "block";
+              } else {
+                pendingBanner.style.display = "none";
+              }
+
+              // Update charts with new data
+              updateCharts(stats);
+            } else {
+              throw new Error(response.message || "Failed to load stats");
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading dashboard stats:", error);
+            // Show error state
+            loadingElements.forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.textContent = "0";
+            });
+            // Show error message in system alerts
+            const alertsContainer = document.getElementById("systemAlerts");
+            if (alertsContainer) {
+              alertsContainer.innerHTML =
+                '<p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to load dashboard statistics. Please refresh the page.</p>';
+            }
+          });
+      }
+
+      function loadSystemAlerts() {
+        const alertsContainer = document.getElementById("systemAlerts");
+        if (!alertsContainer) return;
+
+        alertsContainer.innerHTML =
+          '<p class="text-muted"><i class="fas fa-spinner fa-spin"></i> Loading alerts...</p>';
+
+        API.get("get_system_alerts.php")
+          .then((response) => {
+            if (response.success) {
+              const alerts = response.data;
+
+              if (alerts.length === 0) {
+                alertsContainer.innerHTML =
+                  '<p class="text-success"><i class="fas fa-check-circle"></i> All systems operational</p>';
+                return;
+              }
+
+              alertsContainer.innerHTML = alerts
+                .map(
+                  (alert) => `
+                            <div class="alert-item alert-${alert.type}">
+                                <strong><i class="fas fa-${getAlertIcon(
+                                  alert.type,
+                                )}"></i> ${alert.title}</strong>
+                                <p>${alert.message}</p>
+                                <small>${Utils.timeAgo(
+                                  alert.created_at,
+                                )}</small>
+                            </div>
+                        `,
+                )
+                .join("");
+            } else {
+              alertsContainer.innerHTML =
+                '<p class="text-success"><i class="fas fa-check-circle"></i> All systems operational</p>';
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading system alerts:", error);
+            alertsContainer.innerHTML =
+              '<p class="text-success"><i class="fas fa-check-circle"></i> All systems operational</p>';
+          });
+      }
+
+      function loadRecentActivities() {
+        const activitiesContainer = document.getElementById("recentActivities");
+        if (!activitiesContainer) return;
+
+        activitiesContainer.innerHTML =
+          '<p class="text-muted"><i class="fas fa-spinner fa-spin"></i> Loading activities...</p>';
+
+        API.get("get_recent_activities.php?limit=10")
+          .then((response) => {
+            if (response.success) {
+              const activities = normalizeRecentActivities(response.data);
+
+              if (activities.length === 0) {
+                activitiesContainer.innerHTML =
+                  '<p class="text-muted">No recent activities</p>';
+                return;
+              }
+
+              activitiesContainer.innerHTML = activities
+                .map(
+                  (activity) => `
+                            <div class="activity-item">
+                                <div class="activity-icon ${getActivityIconClass(
+                                  activity.action,
+                                )}">
+                                    <i class="fas fa-${getActivityIcon(
+                                      activity.action,
+                                    )}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-text">${formatActivityText(
+                                      activity,
+                                    )}</div>
+                                    <small class="text-muted">${formatActivityTime(
+                                      activity.created_at,
+                                    )}</small>
+                                </div>
+                            </div>
+                        `,
+                )
+                .join("");
+            } else {
+              activitiesContainer.innerHTML =
+                '<p class="text-muted">No recent activities</p>';
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading recent activities:", error);
+            activitiesContainer.innerHTML =
+              '<p class="text-muted">No recent activities</p>';
+          });
+      }
+
+      function normalizeRecentActivities(data) {
+        if (!Array.isArray(data)) return [];
+
+        return data.map((activity) => {
+          const action = activity.action || activity.type || "system";
+          const fullName =
+            activity.full_name || activity.user || "Unknown User";
+          const role = activity.role || inferActivityRole(activity, action);
+          const details =
+            activity.details || activity.description || activity.title;
+          const createdAt = activity.created_at || activity.timestamp;
+
+          return {
+            action,
+            full_name: fullName,
+            role,
+            details,
+            created_at: createdAt,
+          };
+        });
+      }
+
+      function inferActivityRole(activity, action) {
+        if (activity.role) return activity.role;
+        if (action.includes("hospital")) return "hospital";
+        if (action.includes("admin")) return "admin";
+        return "user";
+      }
+
+      function formatActivityTime(dateString) {
+        if (!dateString) return "Just now";
+        if (window.Utils && typeof Utils.timeAgo === "function") {
+          const formatted = Utils.timeAgo(dateString);
+          return formatted || "Just now";
+        }
+
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return "Just now";
+        return date.toLocaleString();
+      }
+
+      function loadBloodInventory() {
+        const inventoryContainer = document.getElementById(
+          "bloodInventoryOverview",
+        );
+        if (!inventoryContainer) return;
+
+        inventoryContainer.innerHTML =
+          '<p class="text-muted"><i class="fas fa-spinner fa-spin"></i> Loading inventory...</p>';
+
+        API.get("get_blood_availability.php")
+          .then((response) => {
+            if (response.success) {
+              const inventory = response.data;
+
+              inventoryContainer.innerHTML = inventory
+                .map(
+                  (item) => `
+                            <div class="blood-type-card">
+                                <div class="blood-type">${item.blood_type}</div>
+                                <div class="blood-units">${
+                                  item.total_units || 0
+                                } units</div>
+                                <small class="text-muted">${
+                                  item.hospitals_count || 0
+                                } hospitals</small>
+                            </div>
+                        `,
+                )
+                .join("");
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading blood inventory:", error);
+          });
+      }
+
+      function initializeCharts() {
+        // Donation Trends Chart
+        const donationCtx = document
+          .getElementById("donationChart")
+          .getContext("2d");
+        donationChart = new Chart(donationCtx, {
+          type: "line",
+          data: {
+            labels: [
+              "Day 1",
+              "Day 2",
+              "Day 3",
+              "Day 4",
+              "Day 5",
+              "Day 6",
+              "Day 7",
+            ],
+            datasets: [
+              {
+                label: "Donations",
+                data: [0, 0, 0, 0, 0, 0, 0],
+                borderColor: "#dc3545",
+                backgroundColor: "rgba(220, 53, 69, 0.1)",
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.5,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                mode: "index",
+                intersect: false,
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                padding: 10,
+                cornerRadius: 6,
+              },
+            },
+            scales: {
+              x: {
+                display: true,
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  maxRotation: 0,
+                  minRotation: 0,
+                  font: {
+                    size: 11,
+                  },
+                },
+              },
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                  stepSize: 1,
+                  font: {
+                    size: 11,
+                  },
+                },
+                grid: {
+                  color: "rgba(0, 0, 0, 0.05)",
+                },
+              },
+            },
+            interaction: {
+              mode: "nearest",
+              axis: "x",
+              intersect: false,
+            },
+          },
+        });
+
+        // Blood Type Chart
+        const bloodTypeCtx = document
+          .getElementById("bloodTypeChart")
+          .getContext("2d");
+        bloodTypeChart = new Chart(bloodTypeCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+            datasets: [
+              {
+                data: [0, 0, 0, 0, 0, 0, 0, 0],
+                backgroundColor: [
+                  "#FF6384",
+                  "#36A2EB",
+                  "#FFCE56",
+                  "#4BC0C0",
+                  "#9966FF",
+                  "#FF9F40",
+                  "#E7E9ED",
+                  "#C9CBCF",
+                ],
+                borderWidth: 2,
+                borderColor: "#fff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
+            cutout: "60%",
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: {
+                  boxWidth: 10,
+                  padding: 8,
+                  font: {
+                    size: 10,
+                  },
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                },
+                maxHeight: 100,
+              },
+              tooltip: {
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                padding: 10,
+                cornerRadius: 6,
+                callbacks: {
+                  label: function (context) {
+                    const label = context.label || "";
+                    const value = context.parsed || 0;
+                    const total = context.dataset.data.reduce(
+                      (a, b) => a + b,
+                      0,
+                    );
+                    const percentage =
+                      total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                    return (
+                      label + ": " + value + " units (" + percentage + "%)"
+                    );
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Geographic Chart
+        const geographicCtx = document
+          .getElementById("geographicChart")
+          .getContext("2d");
+        geographicChart = new Chart(geographicCtx, {
+          type: "bar",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Donors by City",
+                data: [],
+                backgroundColor: "#dc3545",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          },
+        });
+      }
+
+      function updateCharts(stats) {
+        // Update donation chart with exactly 7 days
+        if (
+          stats.donation_trends &&
+          stats.donation_trends.labels &&
+          stats.donation_trends.data
+        ) {
+          const labels = stats.donation_trends.labels.slice(0, 7);
+          const data = stats.donation_trends.data.slice(0, 7);
+
+          // Ensure we have exactly 7 entries
+          while (labels.length < 7) {
+            labels.push("N/A");
+            data.push(0);
+          }
+
+          // Validate all data points
+          const cleanData = data.map((val) => {
+            const num = parseInt(val) || 0;
+            return isFinite(num) && num >= 0 ? num : 0;
+          });
+
+          donationChart.data.labels = labels.slice(0, 7);
+          donationChart.data.datasets[0].data = cleanData.slice(0, 7);
+          donationChart.update("none"); // Update without animation
+        }
+
+        // Update blood type chart with exactly 8 blood types
+        if (
+          stats.blood_type_distribution &&
+          Array.isArray(stats.blood_type_distribution)
+        ) {
+          // Ensure exactly 8 blood types in correct order
+          const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+          const bloodData = new Array(8).fill(0);
+
+          stats.blood_type_distribution.slice(0, 8).forEach((item, index) => {
+            if (index < 8) {
+              const units = parseInt(item.total_units) || 0;
+              bloodData[index] = isFinite(units) && units >= 0 ? units : 0;
+            }
+          });
+
+          bloodTypeChart.data.datasets[0].data = bloodData;
+          bloodTypeChart.update("none"); // Update without animation
+        }
+
+        // Update geographic chart with max 10 cities
+        if (
+          stats.geographic_distribution &&
+          Array.isArray(stats.geographic_distribution)
+        ) {
+          const geoData = stats.geographic_distribution.slice(0, 10);
+          const labels = geoData.map((item) =>
+            (item.city || "Unknown").substring(0, 20),
+          );
+          const data = geoData.map((item) => {
+            const count = parseInt(item.donor_count) || 0;
+            return isFinite(count) && count >= 0 ? count : 0;
+          });
+
+          geographicChart.data.labels = labels;
+          geographicChart.data.datasets[0].data = data;
+          geographicChart.update("none");
+        }
+      }
+
+      // Utility functions
+      function getAlertIcon(type) {
+        const icons = {
+          critical: "exclamation-triangle",
+          warning: "exclamation-circle",
+          info: "info-circle",
+        };
+        return icons[type] || "info-circle";
+      }
+
+      function getActivityIcon(action) {
+        const icons = {
+          login: "sign-in-alt",
+          logout: "sign-out-alt",
+          registration: "user-plus",
+          donation: "tint",
+          emergency_request: "exclamation-triangle",
+          hospital_approval: "check-circle",
+        };
+        return icons[action] || "circle";
+      }
+
+      function getActivityIconClass(action) {
+        const classes = {
+          login: "login",
+          logout: "login",
+          registration: "register",
+          donation: "donation",
+          emergency_request: "emergency",
+          hospital_approval: "login",
+        };
+        return classes[action] || "login";
+      }
+
+      function formatActivityText(activity) {
+        const user = activity.full_name || "Unknown User";
+        const role = activity.role || "user";
+
+        switch (activity.action) {
+          case "login":
+            return `${user} (${role}) logged in`;
+          case "registration":
+            return `New ${role} registered: ${user}`;
+          case "donation":
+            return `${user} completed a blood donation`;
+          case "emergency_request":
+            return `Emergency blood request submitted`;
+          case "hospital_approval":
+            return `Hospital registration approved: ${user}`;
+          default:
+            return activity.details || `${user} performed ${activity.action}`;
+        }
+      }
+
+      // Modal functions
+      function showUsersModal() {
+        $("#usersModal").modal("show");
+        loadUsers();
+      }
+
+      let currentUsersPage = 1;
+      let usersFilters = {};
+
+      function loadUsers(page = 1) {
+        currentUsersPage = page;
+
+        // Show loading state
+        document.getElementById("usersTableBody").innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center">
+              <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              Loading users...
+            </td>
+          </tr>
+        `;
+
+        // Get filter values
+        const filters = {
+          role: document.getElementById("userRoleFilter")?.value || "",
+          status: document.getElementById("userStatusFilter")?.value || "",
+          search: document.getElementById("userSearchInput")?.value || "",
+          page: page,
+          limit: 10,
+        };
+
+        API.post("get_users.php", filters)
+          .then((response) => {
+            if (response.success) {
+              displayUsers(response.data.users);
+              updateUsersCount(response.data.total);
+              updateUsersPagination(response.data.pagination);
+            } else {
+              document.getElementById("usersTableBody").innerHTML = `
+                <tr><td colspan="8" class="text-center text-danger">Error: ${response.message}</td></tr>
+              `;
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading users:", error);
+            document.getElementById("usersTableBody").innerHTML = `
+              <tr><td colspan="8" class="text-center text-danger">Failed to load users</td></tr>
+            `;
+          });
+      }
+
+      function displayUsers(users) {
+        const tbody = document.getElementById("usersTableBody");
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = `
+            <tr><td colspan="8" class="text-center text-muted">No users found</td></tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = users
+          .map((user) => {
+            const statusBadge = getStatusBadge(user);
+            const roleBadge = getRoleBadge(user.role);
+
+            return `
+            <tr>
+              <td>${user.id}</td>
+              <td>${Utils.escapeHtml(user.username)}</td>
+              <td>${Utils.escapeHtml(user.email)}</td>
+              <td>${Utils.escapeHtml(user.full_name || "N/A")}</td>
+              <td>${roleBadge}</td>
+              <td>${statusBadge}</td>
+              <td>${new Date(user.created_at).toLocaleDateString()}</td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-info" onclick="viewUserDetails(${
+                    user.id
+                  })" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-warning" onclick="editUser(${
+                    user.id
+                  })" title="Edit User">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  ${
+                    user.is_active
+                      ? `<button class="btn btn-secondary" onclick="deactivateUser(${user.id})" title="Deactivate">
+                      <i class="fas fa-ban"></i>
+                    </button>`
+                      : `<button class="btn btn-success" onclick="activateUser(${user.id})" title="Activate">
+                      <i class="fas fa-check"></i>
+                    </button>`
+                  }
+                </div>
+              </td>
+            </tr>
+          `;
+          })
+          .join("");
+      }
+
+      function getStatusBadge(user) {
+        if (!user.is_active) {
+          return '<span class="badge badge-secondary">Inactive</span>';
+        }
+        if (user.is_verified) {
+          return '<span class="badge badge-success">Verified</span>';
+        }
+        return '<span class="badge badge-warning">Unverified</span>';
+      }
+
+      function getRoleBadge(role) {
+        const badges = {
+          admin: '<span class="badge badge-danger">Admin</span>',
+          hospital: '<span class="badge badge-primary">Hospital</span>',
+          donor: '<span class="badge badge-info">Donor</span>',
+        };
+        return badges[role] || `<span class="badge badge-light">${role}</span>`;
+      }
+
+      function searchUsers() {
+        loadUsers(1);
+      }
+
+      function updateUsersCount(total) {
+        document.getElementById("usersCount").textContent =
+          `Total: ${total} users`;
+      }
+
+      function updateUsersPagination(pagination) {
+        const container = document.getElementById("usersPagination");
+        if (!pagination || pagination.totalPages <= 1) {
+          container.innerHTML = "";
+          return;
+        }
+
+        let paginationHTML = '<nav><ul class="pagination pagination-sm mb-0">';
+
+        // Previous page
+        if (pagination.currentPage > 1) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadUsers(${
+            pagination.currentPage - 1
+          })">Previous</a></li>`;
+        }
+
+        // Page numbers
+        for (
+          let i = Math.max(1, pagination.currentPage - 2);
+          i <= Math.min(pagination.totalPages, pagination.currentPage + 2);
+          i++
+        ) {
+          paginationHTML += `<li class="page-item ${
+            i === pagination.currentPage ? "active" : ""
+          }">
+            <a class="page-link" href="#" onclick="loadUsers(${i})">${i}</a>
+          </li>`;
+        }
+
+        // Next page
+        if (pagination.currentPage < pagination.totalPages) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadUsers(${
+            pagination.currentPage + 1
+          })">Next</a></li>`;
+        }
+
+        paginationHTML += "</ul></nav>";
+        container.innerHTML = paginationHTML;
+      }
+
+      function viewUserDetails(userId) {
+        Notifications.info(
+          "User Details",
+          "User details feature will be implemented soon!",
+        );
+      }
+
+      function editUser(userId) {
+        Notifications.info(
+          "Edit User",
+          "User editing feature will be implemented soon!",
+        );
+      }
+
+      function activateUser(userId) {
+        Notifications.confirm(
+          "Activate User",
+          "Are you sure you want to activate this user?",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            API.post("update_user_status.php", {
+              user_id: userId,
+              action: "activate",
+            }).then((response) => {
+              if (response.success) {
+                Notifications.success("Success", "User activated successfully");
+                loadUsers(currentUsersPage);
+              } else {
+                Notifications.error("Error", response.message);
+              }
+            });
+          }
+        });
+      }
+
+      function deactivateUser(userId) {
+        Notifications.confirm(
+          "Deactivate User",
+          "Are you sure you want to deactivate this user?",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            API.post("update_user_status.php", {
+              user_id: userId,
+              action: "deactivate",
+            }).then((response) => {
+              if (response.success) {
+                Notifications.success(
+                  "Success",
+                  "User deactivated successfully",
+                );
+                loadUsers(currentUsersPage);
+              } else {
+                Notifications.error("Error", response.message);
+              }
+            });
+          }
+        });
+      }
+
+      function exportUsers() {
+        Notifications.info(
+          "Export Users",
+          "Users export feature will be implemented soon!",
+        );
+      }
+
+      function showReportsModal() {
+        // Implement reports modal
+        Notifications.info(
+          "Reports & Analytics",
+          "Advanced reporting feature coming soon!",
+        );
+      }
+
+      // Fallback function for browser cache compatibility
+      function showAuditLogs() {
+        console.log("Redirecting to audit logs page...");
+        window.location.href = "audit_logs.html";
+      }
+
+      // Override any cached versions
+      window.showAuditLogs = function () {
+        window.location.href = "audit_logs.html";
+      };
+
+      // Ensure function is available on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Force override any cached function definitions
+        if (
+          typeof window.showAuditLogs !== "function" ||
+          window.showAuditLogs.toString().includes("coming soon")
+        ) {
+          window.showAuditLogs = function () {
+            window.location.href = "audit_logs.html";
+          };
+        }
+      });
+
+      function logout() {
+        Notifications.confirm(
+          "Logout",
+          "Are you sure you want to logout?",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            Session.logout()
+              .then(() => {
+                window.location.href = "../index.html";
+              })
+              .catch(() => {
+                window.location.href = "../index.html";
+              });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
