@@ -109,5 +109,3 @@ Raktasewa is a comprehensive Blood Bank Management System designed to streamline
 - **XAMPP** - Local development server
 - **Apache** - Web server
 - **phpMyAdmin** - Database administration
-
-## 📁 Project Structure
